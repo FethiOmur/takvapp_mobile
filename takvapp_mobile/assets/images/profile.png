@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Profile Image">
+<path id="Oval Copy" fill-rule="evenodd" clip-rule="evenodd" d="M32 63C49.1208 63 63 49.1208 63 32C63 14.8792 49.1208 1 32 1C14.8792 1 1 14.8792 1 32C1 49.1208 14.8792 63 32 63Z" stroke="url(#paint0_linear_0_205)" stroke-width="2"/>
+<path id="Inner Oval" d="M32 4.25C47.3259 4.25 59.75 16.6741 59.75 32C59.75 47.3259 47.3259 59.75 32 59.75C16.6741 59.75 4.25 47.3259 4.25 32C4.25 16.6741 16.6741 4.25 32 4.25Z" stroke="var(--stroke-0, black)" stroke-opacity="0.1" stroke-width="0.5"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_205" x1="34.021" y1="77.2361" x2="76.8159" y2="31.447" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FBAA47"/>
+<stop offset="0.519909" stop-color="#D91A46"/>
+<stop offset="1" stop-color="#A60F93"/>
+</linearGradient>
+</defs>
+</svg>
