@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'device_request_model.g.dart';
 
- @JsonSerializable()
+@JsonSerializable()
 class DeviceRequest {
   final String deviceId;
   final String? platform;

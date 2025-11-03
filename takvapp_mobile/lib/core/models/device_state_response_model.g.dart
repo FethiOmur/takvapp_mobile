@@ -8,16 +8,16 @@ part of 'device_state_response_model.dart';
 
 DeviceStateResponse _$DeviceStateResponseFromJson(Map<String, dynamic> json) =>
     DeviceStateResponse(
-      deviceId: (json['deviceId'] as num).toInt(),
+      deviceId: (json['deviceId'] as num?)?.toInt(),
       deviceIdString: json['deviceIdString'] as String,
       platform: json['platform'] as String?,
       locale: json['locale'] as String?,
       timezone: json['timezone'] as String?,
-      createdAt: json['createdAt'] as String,
-      lastSeenAt: json['lastSeenAt'] as String,
-      deviceState: DeviceState.fromJson(
-        json['deviceState'] as Map<String, dynamic>,
-      ),
+      createdAt: _fromIso(json['createdAt'] as String?),
+      lastSeenAt: _fromIso(json['lastSeenAt'] as String?),
+      deviceState: json['deviceState'] == null
+          ? null
+          : DeviceState.fromJson(json['deviceState'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$DeviceStateResponseToJson(
@@ -28,22 +28,23 @@ Map<String, dynamic> _$DeviceStateResponseToJson(
   'platform': instance.platform,
   'locale': instance.locale,
   'timezone': instance.timezone,
-  'createdAt': instance.createdAt,
-  'lastSeenAt': instance.lastSeenAt,
-  'deviceState': instance.deviceState.toJson(),
+  'createdAt': _toIso(instance.createdAt),
+  'lastSeenAt': _toIso(instance.lastSeenAt),
+  'deviceState': instance.deviceState?.toJson(),
 };
 
 DeviceState _$DeviceStateFromJson(Map<String, dynamic> json) => DeviceState(
-  id: (json['id'] as num).toInt(),
+  id: (json['id'] as num?)?.toInt(),
   lastLocation: json['lastLocation'] == null
       ? null
       : Location.fromJson(json['lastLocation'] as Map<String, dynamic>),
   lastPrayerCache: json['lastPrayerCache'] == null
       ? null
       : PrayerTimes.fromJson(json['lastPrayerCache'] as Map<String, dynamic>),
-  lastPrayerDate: json['lastPrayerDate'] as String?,
+  lastPrayerDate: _fromDateOnly(json['lastPrayerDate'] as String?),
   lastGeohash6: json['lastGeohash6'] as String?,
-  lastUpdatedAt: json['lastUpdatedAt'] as String,
+  lastUpdatedAt: _fromIso(json['lastUpdatedAt'] as String?),
+  createdAt: _fromIso(json['createdAt'] as String?),
 );
 
 Map<String, dynamic> _$DeviceStateToJson(DeviceState instance) =>
@@ -51,16 +52,17 @@ Map<String, dynamic> _$DeviceStateToJson(DeviceState instance) =>
       'id': instance.id,
       'lastLocation': instance.lastLocation?.toJson(),
       'lastPrayerCache': instance.lastPrayerCache?.toJson(),
-      'lastPrayerDate': instance.lastPrayerDate,
+      'lastPrayerDate': _toDateOnly(instance.lastPrayerDate),
       'lastGeohash6': instance.lastGeohash6,
-      'lastUpdatedAt': instance.lastUpdatedAt,
+      'lastUpdatedAt': _toIso(instance.lastUpdatedAt),
+      'createdAt': _toIso(instance.createdAt),
     };
 
 Location _$LocationFromJson(Map<String, dynamic> json) => Location(
-  id: (json['id'] as num).toInt(),
+  id: (json['id'] as num?)?.toInt(),
   latitude: (json['latitude'] as num).toDouble(),
   longitude: (json['longitude'] as num).toDouble(),
-  geohash6: json['geohash6'] as String,
+  geohash6: json['geohash6'] as String?,
 );
 
 Map<String, dynamic> _$LocationToJson(Location instance) => <String, dynamic>{

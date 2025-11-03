@@ -20,32 +20,36 @@ class FakeApiService implements ApiServiceInterface {
   );
 
   // Sahte `upsertDevice` yanıtı (Senaryo 1: İlk Kullanım)
+  @override
   Future<DeviceStateResponse> upsertDevice(DeviceRequest deviceRequest) async {
     // Backend'in hazır olmasını simüle etmek için 1 saniye bekle
     await Future.delayed(const Duration(seconds: 1));
-    
+
     // Bu, "Senaryo 1: İlk Kullanım" senaryosuna uyan
     // "daha önce hiç konum veya namaz vakti alınmamış" sahte bir yanıttır.
+    final now = DateTime.now();
     return DeviceStateResponse(
       deviceId: 1,
       deviceIdString: deviceRequest.deviceId,
       platform: deviceRequest.platform,
       locale: deviceRequest.locale,
       timezone: deviceRequest.timezone,
-      createdAt: DateTime.now().toIso8601String(),
-      lastSeenAt: DateTime.now().toIso8601String(),
+      createdAt: now,
+      lastSeenAt: now,
       deviceState: DeviceState(
         id: 1,
         lastLocation: null,
         lastPrayerCache: null, // Cache yok
         lastPrayerDate: null,  // Tarih yok
         lastGeohash6: null,    // Geohash yok
-        lastUpdatedAt: DateTime.now().toIso8601String(),
+        lastUpdatedAt: now,
+        createdAt: now,
       ),
     );
   }
 
   // Sahte `getPrayerTimes` yanıtı
+  @override
   Future<PrayerTimes> getPrayerTimes(PrayerTimesRequest request) async {
     // 1 saniye bekle
     await Future.delayed(const Duration(seconds: 1));

@@ -1,6 +1,10 @@
 
+import 'dart:async';
+import 'dart:io';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:dart_geohash/dart_geohash.dart';
+import 'package:geocoding/geocoding.dart';
 
 class LocationService {
   // Varsayılan İstanbul konumu (Senaryo 2: HAYIR)
@@ -17,10 +21,8 @@ class LocationService {
     headingAccuracy: 0.0,
   );
 
-  String calculateGeohash(double lat, double lon) {
-    var geoHasher = GeoHasher();
-    return geoHasher.encode(lon, lat, precision: 6); // 6 karakter hassasiyet
-  }
+  String calculateGeohash(double lat, double lon) =>
+      GeoHasher().encode(lat, lon, precision: 6); // 6 karakter hassasiyet
 
   Future<Position> getCurrentLocation() async {
     bool serviceEnabled;
@@ -28,7 +30,9 @@ class LocationService {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      return _defaultPosition;
+      await Geolocator.openLocationSettings();
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return _defaultPosition;
     }
 
     permission = await Geolocator.checkPermission();
@@ -40,14 +44,49 @@ class LocationService {
     }
 
     if (permission == LocationPermission.deniedForever) {
+      await Geolocator.openAppSettings();
       return _defaultPosition;
     }
 
+    if (Platform.isIOS) {
+      final accuracyStatus = await Geolocator.getLocationAccuracy();
+      if (accuracyStatus == LocationAccuracyStatus.reduced) {
+        try {
+          await Geolocator.requestTemporaryFullAccuracy(purposeKey: 'PrayerTimesPrecision');
+        } catch (_) {
+          // Kullanıcı reddederse mevcut doğrulukla devam edilir.
+        }
+      }
+    }
+
     try {
-      return await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.medium);
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.best,
+          distanceFilter: 10,
+        ),
+      ).timeout(const Duration(seconds: 8));
+      return position;
+    } on TimeoutException {
+      final fallback = await Geolocator.getLastKnownPosition();
+      return fallback ?? _defaultPosition;
+    } catch (_) {
+      final fallback = await Geolocator.getLastKnownPosition();
+      return fallback ?? _defaultPosition;
+    }
+  }
+
+  Future<String> getPlacemark(double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude)
+          .timeout(const Duration(seconds: 5));
+      if (placemarks.isNotEmpty) {
+        final placemark = placemarks.first;
+        return "${placemark.locality}, ${placemark.country}";
+      }
+      return "Unknown Location";
     } catch (e) {
-      return _defaultPosition;
+      return "Unknown Location";
     }
   }
 }

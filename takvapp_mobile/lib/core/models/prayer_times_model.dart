@@ -1,9 +1,9 @@
-import 'package:json_annotation/json_annotation.dart';
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'prayer_times_model.g.dart';
 
- @JsonSerializable()
+@JsonSerializable()
 class PrayerTimes extends Equatable {
   final String? fajr;
   final String? sunrise;

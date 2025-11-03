@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'prayer_times_request_model.g.dart';
 
- @JsonSerializable()
+@JsonSerializable()
 class PrayerTimesRequest {
   final String deviceId;
   final double latitude;

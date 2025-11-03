@@ -1,173 +1,105 @@
-
 import 'package:flutter/material.dart';
+import 'package:takvapp_mobile/core/theme/app_colors.dart';
+import 'package:takvapp_mobile/core/theme/app_spacing.dart';
+import 'package:takvapp_mobile/core/theme/app_text_styles.dart';
 import 'package:takvapp_mobile/features/app_init/view/app_init_wrapper_page.dart';
+import 'package:takvapp_mobile/features/onboarding/view/email_verification_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
-  const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({super.key});
 
-  void _navigateToApp(BuildContext context) {
-    // Giriş/Onboarding ekranına geri dönülmemesi için 'pushReplacement' kullanıyoruz.
+  void _openEmailVerification(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const EmailVerificationScreen()),
+    );
+  }
+
+  void _skip(BuildContext context) {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => const AppInitWrapperPage(),
-      ),
+      MaterialPageRoute(builder: (_) => const AppInitWrapperPage()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Arka Plan Cami Görseli (Doğru dosya adı)
           Image.asset(
             'assets/images/openingscreencami.png',
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                color: Colors.black,
-                alignment: Alignment.center,
-                child: const Text(
-                  "'assets/images/openingscreencami.png' bulunamadı.\nLütfen manuel olarak eklediğinizden emin olun.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.red, fontSize: 12),
-                ),
-              );
-            },
           ),
-
-          // 2. Arka Planı Karartma
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withOpacity(0.1),
-                  Colors.black.withOpacity(0.5),
-                  Colors.black.withOpacity(0.9),
+                  Colors.black.withValues(alpha: 0.1),
+                  Colors.black.withValues(alpha: 0.65),
+                  Colors.black.withValues(alpha: 0.85),
                 ],
-                stops: const [0.5, 0.7, 1.0],
               ),
             ),
           ),
-
-          // 3. Ana İçerik (Logo, Butonlar, vb.)
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.xl,
+                vertical: AppSpacing.lg,
+              ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 'Skip' (Atla) Butonu
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () => _navigateToApp(context),
-                        child: const Text(
-                          'Skip',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const Spacer(flex: 1), 
-
-                  // Logo (Doğru dosya adı)
-                  Image.asset(
-                    'assets/images/takvapplogo.png',
-                    height: 150, 
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 150,
-                        alignment: Alignment.center,
-                        child: const Text(
-                          "'assets/images/takvapplogo.png' bulunamadı.\nLütfen manuel olarak eklediğinizden emin olun.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.red, fontSize: 12),
-                        ),
-                      );
-                    },
-                  ),
-                  
-                  // 'TAKVA APP' Metni
-                  const Text(
-                    'T Δ K V Δ   Δ P P', 
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2.0, 
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: TextButton(
+                      onPressed: () => _skip(context),
+                      child: const Text('Skip'),
                     ),
                   ),
-
-                  const Spacer(flex: 2), 
-
-                  // Giriş Butonları
-                  _buildLoginButton(
-                    context,
-                    text: 'Continue with Apple',
-                    icon: Icons.apple,
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                    onPressed: () {
-                      _navigateToApp(context);
-                    },
+                  const Spacer(),
+                  Center(
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          'assets/images/takvapplogo.png',
+                          height: 110,
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        Text(
+                          'TAKVAPP',
+                          style: AppTextStyles.displayXL.copyWith(
+                            letterSpacing: 8,
+                            color: AppColors.white,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  
-                  _buildLoginButton(
-                    context,
-                    text: 'Continue with Google',
-                    icon: Icons.g_mobiledata_sharp, 
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                    onPressed: () {
-                      _navigateToApp(context);
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  _buildLoginButton(
-                    context,
-                    text: 'Continue with Email',
-                    backgroundColor: Colors.grey.shade800.withOpacity(0.8),
-                    foregroundColor: Colors.white,
-                    onPressed: () {
-                      _navigateToApp(context);
-                    },
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Footer Linkleri
+                  const SizedBox(height: AppSpacing.xl),
+                  _AuthButtons(onEmail: () => _openEmailVerification(context)),
+                  const SizedBox(height: AppSpacing.lg),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextButton(
-                        onPressed: () { /* TODO: Gizlilik Politikası */ },
-                        child: const Text(
-                          'Privacy policy',
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
-                        ),
+                        onPressed: () {},
+                        child: const Text('Privacy policy'),
                       ),
-                      const Text(
-                        '|',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      Container(
+                        width: 4,
+                        height: 4,
+                        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.white,
+                        ),
                       ),
                       TextButton(
-                        onPressed: () { /* TODO: Hizmet Şartları */ },
-                        child: const Text(
-                          'Terms of service',
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
-                        ),
+                        onPressed: () {},
+                        child: const Text('Terms of service'),
                       ),
                     ],
                   ),
@@ -179,33 +111,83 @@ class OnboardingScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  // Butonları tekrar etmemek için yardımcı metot
-  Widget _buildLoginButton(
-    BuildContext context, {
-    required String text,
-    IconData? icon,
-    required Color backgroundColor,
-    required Color foregroundColor,
-    required VoidCallback onPressed,
-  }) {
+class _AuthButtons extends StatelessWidget {
+  final VoidCallback onEmail;
+
+  const _AuthButtons({required this.onEmail});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _SocialButton(
+          icon: Icons.apple,
+          label: 'Continue with Apple',
+          onTap: onEmail,
+          backgroundColor: Colors.white.withValues(alpha: 0.9),
+          foregroundColor: Colors.black,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        _SocialButton(
+          icon: Icons.g_translate,
+          label: 'Continue with Google',
+          onTap: onEmail,
+          backgroundColor: Colors.white.withValues(alpha: 0.9),
+          foregroundColor: Colors.black87,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        _SocialButton(
+          label: 'Continue with Email',
+          onTap: onEmail,
+          backgroundColor: Colors.black.withValues(alpha: 0.6),
+          foregroundColor: AppColors.white,
+        ),
+      ],
+    );
+  }
+}
+
+class _SocialButton extends StatelessWidget {
+  final IconData? icon;
+  final String label;
+  final VoidCallback onTap;
+  final Color backgroundColor;
+  final Color foregroundColor;
+
+  const _SocialButton({
+    required this.label,
+    required this.onTap,
+    required this.backgroundColor,
+    required this.foregroundColor,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: ElevatedButton.icon(
-        icon: icon != null ? Icon(icon, size: 28) : const SizedBox(width: 0),
-        label: Text(
-          text,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        onPressed: onPressed,
+      child: ElevatedButton(
+        onPressed: onTap,
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           foregroundColor: foregroundColor,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          elevation: 14,
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30), // Yuvarlak buton
+            borderRadius: BorderRadius.circular(40),
           ),
-          alignment: icon != null ? Alignment.center : Alignment.center,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, color: foregroundColor),
+              const SizedBox(width: AppSpacing.sm),
+            ],
+            Text(label, style: AppTextStyles.bodyM.copyWith(color: foregroundColor)),
+          ],
         ),
       ),
     );

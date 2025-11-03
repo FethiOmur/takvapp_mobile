@@ -21,6 +21,7 @@ class ApiService implements ApiServiceInterface {
     _dio.interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
   }
 
+  @override
   Future<DeviceStateResponse> upsertDevice(DeviceRequest deviceRequest) async {
     try {
       final response = await _dio.post(
@@ -33,6 +34,7 @@ class ApiService implements ApiServiceInterface {
     }
   }
 
+  @override
   Future<PrayerTimes> getPrayerTimes(PrayerTimesRequest request) async {
     try {
       final response = await _dio.post(

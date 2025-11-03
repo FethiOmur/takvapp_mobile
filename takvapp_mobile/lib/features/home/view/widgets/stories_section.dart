@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:takvapp_mobile/core/theme/app_colors.dart';
+import 'package:takvapp_mobile/core/theme/app_spacing.dart';
 import 'package:takvapp_mobile/core/theme/app_text_styles.dart';
 import 'package:takvapp_mobile/features/home/view/widgets/story_model.dart';
 
@@ -10,58 +11,89 @@ class StoriesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 120,
-      child: ListView.builder(
+    return SizedBox(
+      height: 110,
+      child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        itemCount: stories.length,
-        itemBuilder: (context, index) {
-          return _buildStoryItem(stories[index]);
-        },
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+        child: Row(
+          children: [
+            for (int i = 0; i < stories.length; i++) ...[
+              if (i != 0) const SizedBox(width: AppSpacing.md),
+              _StoryBubble(story: stories[i]),
+            ],
+          ],
+        ),
       ),
     );
   }
+}
 
-  Widget _buildStoryItem(Story story) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double radius = constraints.maxHeight / 3;
-        final double fontSize = radius / 4;
+class _StoryBubble extends StatelessWidget {
+  final Story story;
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: radius,
-                backgroundImage: AssetImage(story.imageUrl),
-                child: story.isLive
-                    ? Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: AppColors.red,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text('LIVE', style: AppTextStyles.caption.copyWith(fontSize: fontSize / 1.5)),
-                        ),
-                      )
-                    : null,
+  const _StoryBubble({required this.story});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 68,
+          height: 68,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: SweepGradient(
+              colors: [
+                Color(0xFFFF5F6D),
+                Color(0xFFFFC371),
+                Color(0xFF42C3FF),
+                Color(0xFFFF5F6D),
+              ],
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(3.0),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 8),
-              Text(
-                story.label,
-                style: AppTextStyles.bodyText2.copyWith(fontSize: fontSize),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              child: ClipOval(
+                child: Image.asset(
+                  story.imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: AppColors.surfaceLow,
+                      child: const Icon(Icons.image, color: AppColors.textSecondary),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(story.label, style: AppTextStyles.bodyS),
+            if (story.isLive) ...[
+              const SizedBox(width: AppSpacing.xs),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.error,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: Text('LIVE', style: AppTextStyles.label.copyWith(color: AppColors.white, fontSize: 10)),
               ),
             ],
-          ),
-        );
-      },
+          ],
+        ),
+      ],
     );
   }
 }

@@ -1,36 +1,38 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:takvapp_mobile/core/api/api_service.dart';
-import 'package:takvapp_mobile/core/api/fake_api_service.dart'; // SAHTE OLANI İÇERİ AKTAR
 import 'package:takvapp_mobile/core/api/api_service_interface.dart';
+import 'package:takvapp_mobile/core/api/fake_api_service.dart';
 import 'package:takvapp_mobile/core/services/device_service.dart';
 import 'package:takvapp_mobile/core/services/location_service.dart';
+import 'package:takvapp_mobile/core/services/prayer_cache_service.dart';
+import 'package:takvapp_mobile/core/theme/app_theme.dart';
 import 'package:takvapp_mobile/features/app_init/cubit/app_init_cubit.dart';
-import 'package:takvapp_mobile/features/app_init/view/app_init_wrapper_page.dart';
-import 'package:takvapp_mobile/features/prayer_times/bloc/prayer_times_bloc.dart';
 import 'package:takvapp_mobile/features/onboarding/view/onboarding_screen.dart';
+import 'package:takvapp_mobile/features/prayer_times/bloc/prayer_times_bloc.dart';
 
 // UYGULAMANIN SAHTE VERİ KULLANIP KULLANMAYACAĞINI KONTROL EDEN BAYRAK
-const bool USE_FAKE_API = true;
+const bool useFakeApi = true;
 
 void main() {
+  GoogleFonts.config.allowRuntimeFetching = false;
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        // ApiService'i koşullu olarak sağla:
         RepositoryProvider<ApiServiceInterface>(
-          create: (context) => USE_FAKE_API ? FakeApiService() : ApiService(),
+          create: (context) => useFakeApi ? FakeApiService() : ApiService(),
         ),
         RepositoryProvider(create: (context) => DeviceService()),
         RepositoryProvider(create: (context) => LocationService()),
+        RepositoryProvider(create: (context) => PrayerCacheService()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -43,17 +45,17 @@ class MyApp extends StatelessWidget {
           BlocProvider(
             create: (context) => PrayerTimesBloc(
               context.read<LocationService>(),
-              // Burası önemli: 'dynamic' olarak oku
+              context.read<PrayerCacheService>(),
               context.read<ApiServiceInterface>(),
             ),
           ),
         ],
         child: MaterialApp(
           title: 'Takva App',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-            brightness: Brightness.dark,
-          ),
+          theme: AppTheme.darkTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeMode.dark,
+          debugShowCheckedModeBanner: false,
           home: const OnboardingScreen(),
         ),
       ),

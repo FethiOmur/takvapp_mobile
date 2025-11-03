@@ -3,5 +3,5 @@ class Story {
   final String label;
   final bool isLive;
 
-  Story({required this.imageUrl, required this.label, this.isLive = false});
+  const Story({required this.imageUrl, required this.label, this.isLive = false});
 }

@@ -12,10 +12,11 @@ class PrayerTimesLoading extends PrayerTimesState {}
 
 class PrayerTimesSuccess extends PrayerTimesState {
   final PrayerTimes prayerTimes;
+  final String locationName;
   final bool isFromCache;
-  const PrayerTimesSuccess(this.prayerTimes, {this.isFromCache = false});
+  const PrayerTimesSuccess(this.prayerTimes, this.locationName, {this.isFromCache = false});
   @override
-  List<Object> get props => [prayerTimes, isFromCache];
+  List<Object> get props => [prayerTimes, locationName, isFromCache];
 }
 
 class PrayerTimesFailure extends PrayerTimesState {
