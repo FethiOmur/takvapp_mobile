@@ -33,7 +33,7 @@ class EmailVerificationScreen extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             AppColors.background,
-                            AppColors.background.withOpacity(0.8),
+                            AppColors.background.withValues(alpha: 0.8),
                           ],
                         ),
                       ),
@@ -47,30 +47,25 @@ class EmailVerificationScreen extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.white),
                     ),
                   ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 320,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(AppRadius.lg),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 40,
-                              offset: Offset(0, 24),
-                            ),
-                          ],
+                  Container(
+                    width: 320,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black38,
+                          blurRadius: 40,
+                          offset: Offset(0, 24),
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(AppRadius.lg),
-                          child: Image.asset(
-                            'assets/images/kaaba.png',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      child: Image.asset(
+                        'assets/images/kaaba.png',
+                        fit: BoxFit.cover,
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -84,7 +79,7 @@ class EmailVerificationScreen extends StatelessWidget {
                 color: AppColors.background,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     blurRadius: 30,
                     offset: const Offset(0, -12),
                   ),
