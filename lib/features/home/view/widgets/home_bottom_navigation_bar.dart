@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:takvapp_mobile/core/theme/app_colors.dart';
 import 'package:takvapp_mobile/core/theme/app_spacing.dart';
 import 'package:takvapp_mobile/core/theme/app_text_styles.dart';
+import 'package:takvapp_mobile/features/home/view/widgets/fluid_glass_effect.dart';
 
 class HomeBottomNavigationBar extends StatefulWidget {
   final int selectedIndex;
@@ -70,7 +71,7 @@ class _HomeBottomNavigationBarState extends State<HomeBottomNavigationBar> {
   }
 }
 
-class _LiquidGlassNavBar extends StatelessWidget {
+class _LiquidGlassNavBar extends StatefulWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemTapped;
   final List<_NavItem> items;
@@ -82,125 +83,114 @@ class _LiquidGlassNavBar extends StatelessWidget {
   });
 
   @override
+  State<_LiquidGlassNavBar> createState() => _LiquidGlassNavBarState();
+}
+
+class _LiquidGlassNavBarState extends State<_LiquidGlassNavBar> {
+  final GlobalKey<FluidGlassEffectState> _fluidGlassKey = GlobalKey();
+
+  void _handleTapDown(TapDownDetails details) {
+    final RenderBox? box = context.findRenderObject() as RenderBox?;
+    if (box != null) {
+      final localPosition = box.globalToLocal(details.globalPosition);
+      _fluidGlassKey.currentState?.showEffectAtPosition(localPosition);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final overlayColor = isDark 
+        ? AppColors.background.withValues(alpha: 0.15)
+        : AppColors.white.withValues(alpha: 0.2);
+
     return Padding(
       padding: const EdgeInsets.only(
         left: AppSpacing.xl,
         right: AppSpacing.xl,
         bottom: AppSpacing.lg,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(44),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(44),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.white.withValues(alpha: 0.18),
-                  AppColors.white.withValues(alpha: 0.06),
-                ],
-              ),
-              border: Border.all(color: AppColors.white.withValues(alpha: 0.22)),
-              boxShadow: const [
-                BoxShadow(color: Colors.black54, blurRadius: 30, offset: Offset(0, 18)),
-              ],
-            ),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final itemWidth = constraints.maxWidth / items.length;
-                final indicatorWidth = itemWidth * 0.78;
-                final indicatorLeft = (itemWidth * selectedIndex) + (itemWidth - indicatorWidth) / 2;
-
-                return SizedBox(
-                  height: 86,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      AnimatedPositioned(
-                        duration: const Duration(milliseconds: 360),
-                        curve: Curves.easeOutCubic,
-                        left: indicatorLeft,
-                        bottom: 20,
-                        child: _LiquidIndicator(width: indicatorWidth),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: List.generate(items.length, (index) {
-                          final item = items[index];
-                          final selected = index == selectedIndex;
-                          return Expanded(
-                            child: _LiquidNavItem(
-                              icon: item.icon,
-                              label: item.label,
-                              selected: selected,
-                              onTap: () => onItemTapped(index),
-                            ),
-                          );
-                        }),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _LiquidIndicator extends StatelessWidget {
-  final double width;
-
-  const _LiquidIndicator({required this.width});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: 52,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF4D8DFF),
-              Color(0xFF62F5FF),
-            ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF64F2FF).withValues(alpha: 0.35),
-              blurRadius: 36,
-              spreadRadius: 0,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
+      child: GestureDetector(
+        onTapDown: _handleTapDown,
+        behavior: HitTestBehavior.translucent,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(28),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(28),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppColors.white.withValues(alpha: 0.32),
-                    AppColors.white.withValues(alpha: 0.08),
-                  ],
+          borderRadius: BorderRadius.circular(44),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(44),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        overlayColor,
+                        overlayColor.withValues(alpha: isDark ? 0.12 : 0.16),
+                      ],
+                    ),
+                  ),
+                  child: SizedBox(
+                    height: 86,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: List.generate(widget.items.length, (index) {
+                        final item = widget.items[index];
+                        final selected = index == widget.selectedIndex;
+                        return Expanded(
+                          child: _LiquidNavItem(
+                            icon: item.icon,
+                            label: item.label,
+                            selected: selected,
+                            onTap: () => widget.onItemTapped(index),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
                 ),
               ),
-            ),
+              Positioned(
+                left: 0,
+                right: 0,
+                top: -20,
+                height: 20,
+                child: IgnorePointer(
+                  ignoring: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(44),
+                        topRight: Radius.circular(44),
+                      ),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          overlayColor,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: IgnorePointer(
+                  ignoring: true,
+                  child: FluidGlassEffect(
+                    key: _fluidGlassKey,
+                    scale: 0.25,
+                    blurRadius: 30.0,
+                    animationDuration: const Duration(milliseconds: 300),
+                    visibleDuration: const Duration(milliseconds: 500),
+                    child: const SizedBox.expand(),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -259,7 +249,7 @@ class _LiquidNavItem extends StatelessWidget {
   }
 }
 
-class _ClassicNavBar extends StatelessWidget {
+class _ClassicNavBar extends StatefulWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemTapped;
   final List<_NavItem> items;
@@ -271,40 +261,117 @@ class _ClassicNavBar extends StatelessWidget {
   });
 
   @override
+  State<_ClassicNavBar> createState() => _ClassicNavBarState();
+}
+
+class _ClassicNavBarState extends State<_ClassicNavBar> {
+  final GlobalKey<FluidGlassEffectState> _fluidGlassKey = GlobalKey();
+
+  void _handleTapDown(TapDownDetails details) {
+    final RenderBox? box = context.findRenderObject() as RenderBox?;
+    if (box != null) {
+      final localPosition = box.globalToLocal(details.globalPosition);
+      _fluidGlassKey.currentState?.showEffectAtPosition(localPosition);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final overlayColor = isDark 
+        ? AppColors.background.withValues(alpha: 0.15)
+        : AppColors.white.withValues(alpha: 0.2);
+
     return Padding(
       padding: const EdgeInsets.only(
         left: AppSpacing.xl,
         right: AppSpacing.xl,
         bottom: AppSpacing.lg,
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFF1B1F2A),
-          borderRadius: BorderRadius.circular(36),
-          boxShadow: const [
-            BoxShadow(color: Colors.black38, blurRadius: 20, offset: Offset(0, 8)),
-          ],
-        ),
+      child: GestureDetector(
+        onTapDown: _handleTapDown,
+        behavior: HitTestBehavior.translucent,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(36),
-          child: BottomNavigationBar(
-            items: items
-                .map(
-                  (item) => BottomNavigationBarItem(
-                    icon: Icon(item.icon),
-                    label: item.label,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(36),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        overlayColor,
+                        overlayColor.withValues(alpha: isDark ? 0.12 : 0.16),
+                      ],
+                    ),
                   ),
-                )
-                .toList(),
-            currentIndex: selectedIndex,
-            onTap: onItemTapped,
-            backgroundColor: Colors.transparent,
-            selectedItemColor: AppColors.white,
-            unselectedItemColor: AppColors.white.withValues(alpha: 0.4),
-            selectedLabelStyle: AppTextStyles.bodyS.copyWith(color: AppColors.white),
-            unselectedLabelStyle: AppTextStyles.bodyS.copyWith(color: AppColors.white.withValues(alpha: 0.4)),
-            type: BottomNavigationBarType.fixed,
+                  child: BottomNavigationBar(
+                    items: widget.items
+                        .map(
+                          (item) => BottomNavigationBarItem(
+                            icon: Icon(item.icon),
+                            label: item.label,
+                          ),
+                        )
+                        .toList(),
+                    currentIndex: widget.selectedIndex,
+                    onTap: widget.onItemTapped,
+                    backgroundColor: Colors.transparent,
+                    selectedItemColor: AppColors.white,
+                    unselectedItemColor: AppColors.white.withValues(alpha: 0.4),
+                    selectedLabelStyle: AppTextStyles.bodyS.copyWith(color: AppColors.white),
+                    unselectedLabelStyle: AppTextStyles.bodyS.copyWith(color: AppColors.white.withValues(alpha: 0.4)),
+                    type: BottomNavigationBarType.fixed,
+                    elevation: 0,
+                    showSelectedLabels: true,
+                    showUnselectedLabels: true,
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                top: -20,
+                height: 20,
+                child: IgnorePointer(
+                  ignoring: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(36),
+                        topRight: Radius.circular(36),
+                      ),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          overlayColor,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: IgnorePointer(
+                  ignoring: true,
+                  child: FluidGlassEffect(
+                    key: _fluidGlassKey,
+                    scale: 0.25,
+                    blurRadius: 30.0,
+                    animationDuration: const Duration(milliseconds: 300),
+                    visibleDuration: const Duration(milliseconds: 500),
+                    child: const SizedBox.expand(),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

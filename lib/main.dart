@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:takvapp_mobile/core/api/api_service.dart';
 import 'package:takvapp_mobile/core/api/api_service_interface.dart';
 import 'package:takvapp_mobile/core/api/fake_api_service.dart';
+import 'package:takvapp_mobile/core/services/background_task_service.dart';
 import 'package:takvapp_mobile/core/services/device_service.dart';
 import 'package:takvapp_mobile/core/services/location_service.dart';
 import 'package:takvapp_mobile/core/services/prayer_cache_service.dart';
@@ -33,6 +34,9 @@ class MyApp extends StatelessWidget {
         RepositoryProvider(create: (context) => DeviceService()),
         RepositoryProvider(create: (context) => LocationService()),
         RepositoryProvider(create: (context) => PrayerCacheService()),
+        RepositoryProvider<BackgroundTaskService>(
+          create: (context) => NoopBackgroundTaskService(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -47,6 +51,7 @@ class MyApp extends StatelessWidget {
               context.read<LocationService>(),
               context.read<PrayerCacheService>(),
               context.read<ApiServiceInterface>(),
+              context.read<BackgroundTaskService>(),
             ),
           ),
         ],

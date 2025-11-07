@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:takvapp_mobile/core/theme/app_colors.dart';
 import 'package:takvapp_mobile/core/theme/app_spacing.dart';
 import 'package:takvapp_mobile/core/theme/app_text_styles.dart';
@@ -50,10 +49,12 @@ class QuranPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final arabicHeadlineStyle = GoogleFonts.notoNaskhArabic(
+    const arabicHeadlineStyle = TextStyle(
       fontSize: 24,
       fontWeight: FontWeight.w700,
       color: AppColors.secondary,
+      height: 1.2,
+      fontFamilyFallback: ['Noto Naskh Arabic', 'Geeza Pro', 'Arial'],
     );
 
     return DecoratedBox(

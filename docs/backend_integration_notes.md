@@ -36,6 +36,12 @@
 - `onDailyRefreshTick` should trigger when the calendar day changes while the app is suspended (WorkManager, Background App Refresh, etc.).
 - Registration methods (`registerBackgroundTasks/cancelBackgroundTasks`) allow runtime toggling (e.g., user disables background updates).
 
+## Background Refresh
+- `BackgroundTaskService` now exposes `hasDayChanged(lastRefresh, {reference})` so native layers can apply locale-aware comparisons when deciding to wake Flutter.
+- `PrayerTimesBloc` tracks the last successful refresh date and falls back to cached data with a warning if network calls fail during day changes.
+- `HomeScreen` observes lifecycle + a minute cadence timer to dispatch `RefreshPrayerTimesIfDayChanged`; when the date rolls over in the foreground we automatically enqueue a fresh `FetchPrayerTimes`.
+- Native integrations should continue to call `onDailyRefreshTick()` which will dispatch the same refresh event—duplicate triggers are guarded by the stored `_lastRefreshDate`.
+
 ## Outstanding Questions for Backend
 1. Confirm geohash precision (currently using 6) and whether backend returns the calculated value on `getPrayerTimes`.
 2. Verify that `/api/prayer-times` updates the stored cache on the backend so subsequent `upsertDevice` invocations reflect the latest data.

@@ -21,8 +21,13 @@ class LocationService {
     headingAccuracy: 0.0,
   );
 
-  String calculateGeohash(double lat, double lon) =>
-      GeoHasher().encode(lat, lon, precision: 6); // 6 karakter hassasiyet
+  String? calculateGeohash(double lat, double lon) {
+    try {
+      return GeoHasher().encode(lat, lon, precision: 6);
+    } catch (_) {
+      return null;
+    }
+  }
 
   Future<Position> getCurrentLocation() async {
     bool serviceEnabled;

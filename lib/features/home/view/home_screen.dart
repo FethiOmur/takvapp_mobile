@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takvapp_mobile/core/models/device_state_response_model.dart';
@@ -25,9 +27,10 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _selectedIndex = 0;
   late final Widget _qiblaTab;
+  Timer? _dayChangeTimer;
 
   final List<Story> _stories = const [
     Story(imageUrl: 'assets/images/kaaba.png', label: 'Kaaba', isLive: true),
@@ -39,19 +42,55 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     context.read<PrayerTimesBloc>().add(FetchPrayerTimes(widget.deviceState));
     _qiblaTab = BlocProvider(
       create: (context) => QiblaCubit(
         context.read<LocationService>(),
       )..loadQibla(
-          fallbackLocation: widget.deviceState.deviceState?.lastLocation,
-        ),
+        fallbackLocation: widget.deviceState.deviceState?.lastLocation,
+      ),
       child: const QiblaPage(),
     );
+    _startDayChangeWatcher();
+    _checkDayChange();
   }
 
   void _onItemTapped(int index) {
     setState(() => _selectedIndex = index);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      _checkDayChange();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _dayChangeTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startDayChangeWatcher() {
+    _dayChangeTimer?.cancel();
+    _dayChangeTimer = Timer.periodic(
+      const Duration(minutes: 1),
+      (_) => _checkDayChange(),
+    );
+  }
+
+  void _checkDayChange() {
+    if (!mounted) return;
+    context.read<PrayerTimesBloc>().add(
+          RefreshPrayerTimesIfDayChanged(
+            referenceTime: DateTime.now(),
+            deviceState: widget.deviceState,
+          ),
+        );
   }
 
   @override
@@ -67,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         child: SafeArea(
+          bottom: false,
           child: Column(
             children: [
               Padding(

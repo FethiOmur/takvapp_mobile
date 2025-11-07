@@ -18,6 +18,12 @@ abstract class BackgroundTaskService {
   /// the calendar day changes while the app is not active.
   Future<void> onDailyRefreshTick();
 
+  /// Returns true when the provided [lastRefresh] occurred on a
+  /// different calendar day than [reference]. Platform specific
+  /// services can override this to incorporate locale or timezone
+  /// specific logic.
+  bool hasDayChanged(DateTime? lastRefresh, {DateTime? reference});
+
   /// Registers the desired background tasks. Actual registration is
   /// platform-dependent and should be implemented in native code.
   Future<void> registerBackgroundTasks();
@@ -41,4 +47,15 @@ class NoopBackgroundTaskService implements BackgroundTaskService {
 
   @override
   Future<void> registerBackgroundTasks() async {}
+
+  @override
+  bool hasDayChanged(DateTime? lastRefresh, {DateTime? reference}) {
+    final referenceDate = reference ?? DateTime.now();
+    if (lastRefresh == null) return true;
+    return !_isSameDay(lastRefresh, referenceDate);
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
 }

@@ -23,12 +23,14 @@ class PrayerTimesCard extends StatelessWidget {
         final PrayerTimes data = state is PrayerTimesSuccess ? state.prayerTimes : _demoPrayerTimes;
         final String location = state is PrayerTimesSuccess ? state.locationName : 'Istanbul, Turkey';
         final bool fromCache = state is PrayerTimesSuccess ? state.isFromCache : false;
+        final String? warning = state is PrayerTimesSuccess ? state.warning : null;
 
         return _PrayerHero(
           prayerTimes: data,
           locationLabel: location,
           fromCache: fromCache,
           isLoading: isLoading,
+          warning: warning,
         );
       },
     );
@@ -40,12 +42,14 @@ class _PrayerHero extends StatelessWidget {
   final String locationLabel;
   final bool fromCache;
   final bool isLoading;
+  final String? warning;
 
   const _PrayerHero({
     required this.prayerTimes,
     required this.locationLabel,
     required this.fromCache,
     required this.isLoading,
+    this.warning,
   });
 
   @override
@@ -84,11 +88,9 @@ class _PrayerHero extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(AppSpacing.xl),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -96,63 +98,98 @@ class _PrayerHero extends StatelessWidget {
                         const Icon(Icons.location_on, color: Colors.lightBlueAccent, size: 18),
                         const SizedBox(width: AppSpacing.xs),
                         Expanded(
-                          child: Text(
-                            locationLabel,
-                            style: AppTextStyles.bodyM.copyWith(color: AppColors.white),
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                      child: Text(
+                        locationLabel,
+                        style: AppTextStyles.bodyM.copyWith(color: AppColors.white),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+                      decoration: BoxDecoration(
+                        color: fromCache ? Colors.white24 : Colors.lightBlueAccent,
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                      ),
+                      child: Text(
+                        fromCache ? 'Cached' : 'Fresh',
+                        style:
+                            AppTextStyles.label.copyWith(color: fromCache ? AppColors.white : AppColors.background),
+                      ),
+                    ),
+                  ],
+                ),
+                if (warning != null && warning!.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0x26FFC857),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      border: Border.all(color: const Color(0x33FFC857)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.warning_amber_rounded,
+                          color: Color(0xFFFFE082),
+                          size: 16,
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
-                          decoration: BoxDecoration(
-                            color: fromCache ? Colors.white24 : Colors.lightBlueAccent,
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
-                          ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Expanded(
                           child: Text(
-                            fromCache ? 'Cached' : 'Fresh',
-                            style:
-                                AppTextStyles.label.copyWith(color: fromCache ? AppColors.white : AppColors.background),
+                            warning!,
+                            style: AppTextStyles.bodyS.copyWith(
+                              color: const Color(0xFFF0D48C),
+                            ),
                           ),
                         ),
                       ],
                     ),
+                  ),
+                ],
                     const SizedBox(height: AppSpacing.md),
                     if (next != null) ...[
                       Row(
                         children: [
                           Flexible(
-                            child: Text(
-                              next.name,
-                              style: AppTextStyles.bodyS.copyWith(color: Colors.white70),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.35),
-                              borderRadius: BorderRadius.circular(AppRadius.pill),
-                            ),
-                            child: Text('-${_formatDuration(next.countdown)}', style: AppTextStyles.bodyS),
-                          ),
-                        ],
+                        child: Text(
+                          next.name,
+                          style: AppTextStyles.bodyS.copyWith(color: Colors.white70),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.35),
+                          borderRadius: BorderRadius.circular(AppRadius.pill),
+                        ),
+                        child: Text('-${_formatDuration(next.countdown)}', style: AppTextStyles.bodyS),
+                      ),
+                    ],
+                  ),
+                      const SizedBox(height: AppSpacing.sm),
                       Text(next.time ?? '--:--', style: AppTextStyles.displayXL.copyWith(fontSize: 46)),
                     ],
+                    const Spacer(),
+                    Wrap(
+                      spacing: AppSpacing.md,
+                      runSpacing: AppSpacing.md,
+                      children: segments
+                          .map((segment) => _PrayerChip(
+                                segment: segment,
+                                isActive: segment.name == next?.name,
+                              ))
+                          .toList(),
+                    ),
                   ],
-                ),
-                Wrap(
-                  spacing: AppSpacing.md,
-                  runSpacing: AppSpacing.md,
-                  children: segments
-                      .map((segment) => _PrayerChip(
-                            segment: segment,
-                            isActive: segment.name == next?.name,
-                          ))
-                      .toList(),
-                ),
-              ],
+                );
+              },
             ),
           ),
           if (isLoading)
