@@ -151,18 +151,11 @@ class _LastReadCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(AppRadius.lg + 4);
+    final borderRadius = BorderRadius.circular(36);
 
     return Container(
       decoration: BoxDecoration(
         borderRadius: borderRadius,
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x28141F33),
-            blurRadius: 32,
-            offset: Offset(0, 22),
-          ),
-        ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -180,8 +173,8 @@ class _LastReadCard extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        const Color(0xFF1C2D44).withValues(alpha: 0.85),
-                        const Color(0xFF0F1725).withValues(alpha: 0.9),
+                        AppColors.surfaceHigh.withValues(alpha: 0.6),
+                        AppColors.surface.withValues(alpha: 0.5),
                       ],
                     ),
                   ),
@@ -207,24 +200,6 @@ class _LastReadCard extends StatelessWidget {
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
                   child: Container(color: AppColors.white.withValues(alpha: 0.01)),
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: ClipRRect(
-                borderRadius: borderRadius,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [
-                        AppColors.black.withValues(alpha: 0.3),
-                        AppColors.black.withValues(alpha: 0.1),
-                        AppColors.transparent,
-                      ],
-                    ),
-                  ),
                 ),
               ),
             ),
@@ -306,7 +281,7 @@ class _LastReadCard extends StatelessWidget {
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -370,39 +345,19 @@ class _SurahCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accentColor = surah.isRead ? AppColors.secondary : AppColors.textSecondary;
-    final borderRadius = BorderRadius.circular(AppRadius.md);
-    final backgroundGradient = surah.isRead
-        ? const LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: [
-              Color(0xFF7A5216),
-              Color(0xFF3A2108),
-              Color(0xFF0D0602),
-            ],
-            stops: [0.0, 0.46, 1.0],
-          )
-        : const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF1A2436),
-              Color(0xFF0B111D),
-            ],
-          );
-    final shadowColor = surah.isRead ? const Color(0x33FFC857) : const Color(0x20182137);
-
+    final accentColor = AppColors.textSecondary;
+    final borderRadius = BorderRadius.circular(36);
+    final backgroundGradient = const LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        Color(0xFF1A2436),
+        Color(0xFF0B111D),
+      ],
+    );
     return Container(
       decoration: BoxDecoration(
         borderRadius: borderRadius,
-        boxShadow: [
-          BoxShadow(
-            color: shadowColor,
-            blurRadius: surah.isRead ? 24 : 16,
-            offset: const Offset(0, 16),
-          ),
-        ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -412,89 +367,83 @@ class _SurahCard extends StatelessWidget {
           borderRadius: borderRadius,
           onTap: () {},
           splashColor: accentColor.withValues(alpha: 0.12),
-          highlightColor: accentColor.withValues(alpha: surah.isRead ? 0.18 : 0.08),
-          child: Ink(
-            decoration: BoxDecoration(
-              borderRadius: borderRadius,
-              gradient: backgroundGradient,
-              border: Border.all(color: AppColors.white.withValues(alpha: 0.08)),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.xl,
-                vertical: AppSpacing.lg,
+          highlightColor: accentColor.withValues(alpha: 0.08),
+          child: Opacity(
+            opacity: surah.isRead ? 0.6 : 1.0,
+            child: Ink(
+              decoration: BoxDecoration(
+                borderRadius: borderRadius,
+                gradient: backgroundGradient,
+                border: Border.all(color: AppColors.white.withValues(alpha: 0.08)),
               ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          accentColor.withValues(alpha: surah.isRead ? 0.5 : 0.24),
-                          accentColor.withValues(alpha: surah.isRead ? 0.24 : 0.12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.xl,
+                  vertical: AppSpacing.lg,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            accentColor.withValues(alpha: 0.024),
+                            accentColor.withValues(alpha: 0.012),
+                          ],
+                        ),
+                        border: Border.all(color: accentColor.withValues(alpha: 0.03)),
+                      ),
+                      child: Text(
+                        surah.number.toString().padLeft(2, '0'),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          color: AppColors.white,
+                          letterSpacing: 0.4,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.lg),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            surah.englishName,
+                            style: AppTextStyles.headingM.copyWith(
+                              color: AppColors.white,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            surah.translation,
+                            style: AppTextStyles.bodyS.copyWith(
+                              color: AppColors.textSecondary.withValues(alpha: 0.9),
+                            ),
+                          ),
                         ],
                       ),
-                      border: Border.all(color: accentColor.withValues(alpha: surah.isRead ? 0.45 : 0.3)),
-                          boxShadow: surah.isRead
-                              ? [
-                                  BoxShadow(
-                                    color: accentColor.withValues(alpha: 0.18),
-                                    blurRadius: 16,
-                                    offset: const Offset(0, 6),
-                                  ),
-                                ]
-                              : null,
                     ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      surah.number.toString().padLeft(2, '0'),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                        color: AppColors.white,
-                        letterSpacing: 0.4,
+                    const SizedBox(width: AppSpacing.lg),
+                    Text(
+                      surah.arabicName,
+                      style: arabicHeadlineStyle.copyWith(
+                        color: surah.isRead ? AppColors.textSecondary : const Color(0xFFFFD27D),
+                        fontSize: surah.isRead ? 24 : 22,
                       ),
+                      textAlign: TextAlign.right,
                     ),
-                  ),
-                  const SizedBox(width: AppSpacing.lg),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          surah.englishName,
-                          style: AppTextStyles.headingM.copyWith(
-                            color: AppColors.white,
-                            letterSpacing: -0.2,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          surah.translation,
-                          style: AppTextStyles.bodyS.copyWith(
-                            color: AppColors.textSecondary.withValues(alpha: 0.9),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.lg),
-                  Text(
-                    surah.arabicName,
-                    style: arabicHeadlineStyle.copyWith(
-                      color: accentColor.withValues(alpha: surah.isRead ? 0.95 : 0.75),
-                      fontSize: surah.isRead ? 24 : 22,
-                    ),
-                    textAlign: TextAlign.right,
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

@@ -3,6 +3,7 @@ import 'package:takvapp_mobile/core/theme/app_colors.dart';
 import 'package:takvapp_mobile/core/theme/app_spacing.dart';
 import 'package:takvapp_mobile/core/theme/app_text_styles.dart';
 import 'package:takvapp_mobile/features/home/view/widgets/story_model.dart';
+import 'package:takvapp_mobile/features/home/view/widgets/story_viewer_page.dart';
 
 class StoriesSection extends StatelessWidget {
   final List<Story> stories;
@@ -12,18 +13,31 @@ class StoriesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 110,
-      child: SingleChildScrollView(
+      height: 120,
+      child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-        child: Row(
-          children: [
-            for (int i = 0; i < stories.length; i++) ...[
-              if (i != 0) const SizedBox(width: AppSpacing.md),
-              _StoryBubble(story: stories[i]),
-            ],
-          ],
-        ),
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.only(right: AppSpacing.xl),
+        itemCount: stories.length + 1,
+        cacheExtent: 200,
+        itemBuilder: (context, index) {
+          if (index == stories.length) {
+            return const SizedBox(width: AppSpacing.xl);
+          }
+          return RepaintBoundary(
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: index > 0 ? AppSpacing.md : 0,
+              ),
+              child: _StoryBubble(
+                key: ValueKey('story_${stories[index].label}_$index'),
+                story: stories[index],
+                index: index,
+                allStories: stories,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -31,69 +45,158 @@ class StoriesSection extends StatelessWidget {
 
 class _StoryBubble extends StatelessWidget {
   final Story story;
+  final int index;
+  final List<Story> allStories;
 
-  const _StoryBubble({required this.story});
+  const _StoryBubble({
+    super.key,
+    required this.story,
+    required this.index,
+    required this.allStories,
+  });
+
+  static const _normalGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFFE1306C),
+      Color(0xFFF77737),
+      Color(0xFFFCAF45),
+      Color(0xFFE1306C),
+    ],
+    stops: [0.0, 0.25, 0.5, 1.0],
+  );
+
+  static const _liveGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFFFF0069),
+      Color(0xFFFF0069),
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 68,
-          height: 68,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: SweepGradient(
-              colors: [
-                Color(0xFFFF5F6D),
-                Color(0xFFFFC371),
-                Color(0xFF42C3FF),
-                Color(0xFFFF5F6D),
-              ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => StoryViewerPage(
+              stories: allStories,
+              initialIndex: index,
             ),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(3.0),
+        );
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          RepaintBoundary(
             child: Container(
-              decoration: const BoxDecoration(
-                color: AppColors.background,
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
+                gradient: story.isLive ? _liveGradient : _normalGradient,
               ),
-              child: ClipOval(
-                child: Image.asset(
-                  story.imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: AppColors.surfaceLow,
-                      child: const Icon(Icons.image, color: AppColors.textSecondary),
-                    );
-                  },
+              child: Padding(
+                padding: const EdgeInsets.all(2.5),
+                child: Container(
+                  width: 75,
+                  height: 75,
+                  decoration: const BoxDecoration(
+                    color: AppColors.background,
+                    shape: BoxShape.circle,
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: story.imageUrl.contains('profile.png')
+                      ? Container(
+                          width: 75,
+                          height: 75,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.surfaceHigh,
+                          ),
+                          child: Stack(
+                            children: [
+                              Image.asset(
+                                story.imageUrl,
+                                width: 75,
+                                height: 75,
+                                fit: BoxFit.cover,
+                                cacheWidth: 150,
+                                cacheHeight: 150,
+                                filterQuality: FilterQuality.low,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: 75,
+                                    height: 75,
+                                    color: AppColors.surfaceLow,
+                                    child: const Icon(
+                                      Icons.person,
+                                      color: AppColors.textSecondary,
+                                      size: 40,
+                                    ),
+                                  );
+                                },
+                              ),
+                              // Profil resmi için overlay ekle
+                              Container(
+                                width: 75,
+                                height: 75,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppColors.white.withValues(alpha: 0.1),
+                                    width: 1,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Image.asset(
+                          story.imageUrl,
+                          width: 75,
+                          height: 75,
+                          fit: BoxFit.cover,
+                          cacheWidth: 150,
+                          cacheHeight: 150,
+                          filterQuality: FilterQuality.low,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: 75,
+                              height: 75,
+                              color: AppColors.surfaceLow,
+                              child: const Icon(Icons.image, color: AppColors.textSecondary, size: 32),
+                            );
+                          },
+                        ),
                 ),
               ),
             ),
           ),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(story.label, style: AppTextStyles.bodyS),
-            if (story.isLive) ...[
-              const SizedBox(width: AppSpacing.xs),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.error,
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
+          const SizedBox(height: AppSpacing.xs),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(story.label, style: AppTextStyles.bodyS),
+              if (story.isLive) ...[
+                const SizedBox(width: AppSpacing.xs),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.error,
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                  ),
+                  child: Text('LIVE', style: AppTextStyles.label.copyWith(color: AppColors.white, fontSize: 10)),
                 ),
-                child: Text('LIVE', style: AppTextStyles.label.copyWith(color: AppColors.white, fontSize: 10)),
-              ),
+              ],
             ],
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }

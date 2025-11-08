@@ -7,7 +7,6 @@ import 'package:takvapp_mobile/core/services/location_service.dart';
 import 'package:takvapp_mobile/core/theme/app_colors.dart';
 import 'package:takvapp_mobile/core/theme/app_spacing.dart';
 import 'package:takvapp_mobile/features/home/view/widgets/ask_imam_card.dart';
-import 'package:takvapp_mobile/features/home/view/widgets/home_app_bar.dart';
 import 'package:takvapp_mobile/features/home/view/widgets/home_bottom_navigation_bar.dart';
 import 'package:takvapp_mobile/features/home/view/widgets/home_insights_row.dart';
 import 'package:takvapp_mobile/features/home/view/widgets/prayer_times_card.dart';
@@ -17,6 +16,8 @@ import 'package:takvapp_mobile/features/qibla/cubit/qibla_cubit.dart';
 import 'package:takvapp_mobile/features/qibla/view/qibla_page.dart';
 import 'package:takvapp_mobile/features/prayer_times/bloc/prayer_times_bloc.dart';
 import 'package:takvapp_mobile/features/quran/view/quran_page.dart';
+import 'package:takvapp_mobile/features/home/view/widgets/explore_page.dart';
+import 'package:takvapp_mobile/features/prayer_times/view/prayer_times_page.dart';
 
 class HomeScreen extends StatefulWidget {
   final DeviceStateResponse deviceState;
@@ -96,38 +97,29 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
-      body: Container(
+      extendBody: false,
+      body: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppColors.background, AppColors.surfaceLow],
+            colors: [
+              Color(0xFF0A0F14),
+              Color(0xFF101A22),
+              Color(0xFF1C262E),
+              AppColors.surfaceLow,
+            ],
           ),
         ),
         child: SafeArea(
-          bottom: false,
-          child: Column(
+          child: IndexedStack(
+            index: _selectedIndex,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.xl,
-                  vertical: AppSpacing.lg,
-                ),
-                child: const HomeAppBar(),
-              ),
-              Expanded(
-                child: IndexedStack(
-                  index: _selectedIndex,
-                  children: [
-                    _HomeOverview(stories: _stories),
-                    _qiblaTab,
-                    const _PlaceholderPage(label: 'Detailed timetable'),
-                    const _PlaceholderPage(label: 'Insights'),
-                    const QuranPage(),
-                  ],
-                ),
-              ),
+              _HomeOverview(stories: _stories),
+              _qiblaTab,
+              const PrayerTimesPage(),
+              const QuranPage(),
+              const ExplorePage(),
             ],
           ),
         ),
@@ -148,6 +140,7 @@ class _HomeOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

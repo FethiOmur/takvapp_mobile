@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:takvapp_mobile/core/theme/app_colors.dart';
 import 'package:takvapp_mobile/core/theme/app_spacing.dart';
 
@@ -35,6 +36,8 @@ class _QiblaCompassState extends State<QiblaCompass> {
             alignment: Alignment.center,
             children: [
               Container(
+                width: 300,
+                height: 300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: const RadialGradient(
@@ -56,7 +59,9 @@ class _QiblaCompassState extends State<QiblaCompass> {
                   ],
                 ),
               ),
-              Positioned.fill(
+              SizedBox(
+                width: 300,
+                height: 300,
                 child: CustomPaint(
                   painter: _CompassTickPainter(),
                 ),
@@ -66,7 +71,7 @@ class _QiblaCompassState extends State<QiblaCompass> {
                 width: 240,
                 height: 240,
                 decoration: BoxDecoration(
-                color: AppColors.background.withValues(alpha: 0.55),
+                  color: AppColors.background.withValues(alpha: 0.55),
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: AppColors.surfaceHigh.withValues(alpha: 0.4),
@@ -77,33 +82,22 @@ class _QiblaCompassState extends State<QiblaCompass> {
               Transform.rotate(
                 angle: rotationRad,
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const SizedBox(height: AppSpacing.md),
                     Icon(
                       Icons.navigation_rounded,
-                      size: 120,
-                      color: const Color(0xFFF6E05E),
+                      size: 110,
+                      color: AppColors.white,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm,
-                        vertical: AppSpacing.xs,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF6E05E).withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(AppRadius.lg),
-                        border: Border.all(
-                          color: const Color(0xFFF6E05E).withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Text(
-                        'Kıble',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: const Color(0xFFF6E05E),
-                              fontWeight: FontWeight.w600,
-                            ),
+                    const SizedBox(height: 8),
+                    SvgPicture.asset(
+                      'assets/images/qibla_icon.svg',
+                      width: 56,
+                      height: 47,
+                      colorFilter: const ColorFilter.mode(
+                        AppColors.white,
+                        BlendMode.srcIn,
                       ),
                     ),
                   ],
@@ -147,21 +141,41 @@ List<Widget> _cardinalLabels(BuildContext context) {
       );
 
   return [
+    // North - top center
     Positioned(
-      top: AppSpacing.sm,
-      child: Text('N', style: baseStyle.copyWith(color: Colors.redAccent)),
+      top: 8,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Text('N', style: baseStyle.copyWith(color: Colors.redAccent)),
+      ),
     ),
+    // South - bottom center
     Positioned(
-      bottom: AppSpacing.sm,
-      child: Text('S', style: baseStyle.copyWith(color: Colors.white70)),
+      bottom: 8,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Text('S', style: baseStyle.copyWith(color: Colors.white70)),
+      ),
     ),
+    // West - left center
     Positioned(
-      left: AppSpacing.sm,
-      child: Text('W', style: baseStyle.copyWith(color: Colors.white70)),
+      left: 8,
+      top: 0,
+      bottom: 0,
+      child: Center(
+        child: Text('W', style: baseStyle.copyWith(color: Colors.white70)),
+      ),
     ),
+    // East - right center
     Positioned(
-      right: AppSpacing.sm,
-      child: Text('E', style: baseStyle.copyWith(color: Colors.white70)),
+      right: 8,
+      top: 0,
+      bottom: 0,
+      child: Center(
+        child: Text('E', style: baseStyle.copyWith(color: Colors.white70)),
+      ),
     ),
   ];
 }
@@ -174,14 +188,17 @@ class _CompassTickPainter extends CustomPainter {
 
     final Paint majorTickPaint = Paint()
       ..color = Colors.white.withValues(alpha: 0.24)
-      ..strokeWidth = 3;
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round;
 
     final Paint minorTickPaint = Paint()
       ..color = Colors.white.withValues(alpha: 0.12)
-      ..strokeWidth = 1.5;
+      ..strokeWidth = 1.5
+      ..strokeCap = StrokeCap.round;
 
+    // Start from -90 degrees so North (0°) is at the top
     for (int degree = 0; degree < 360; degree += 5) {
-      final double angleRad = degree * math.pi / 180;
+      final double angleRad = (degree - 90) * math.pi / 180;
       final double innerRadius = degree % 30 == 0 ? radius - 20 : radius - 10;
 
       final Offset start = Offset(

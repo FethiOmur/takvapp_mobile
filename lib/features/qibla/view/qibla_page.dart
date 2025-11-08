@@ -62,74 +62,33 @@ class _QiblaHeader extends StatelessWidget {
         top: AppSpacing.lg,
         bottom: AppSpacing.md,
       ),
-      child: Row(
-        children: [
-          _HeaderIconButton(
-            icon: Icons.arrow_back_ios_new_rounded,
-            onPressed: () => Navigator.of(context).maybePop(),
+      child: Center(
+        child: Text(
+          'Kıble Bulucu',
+          textAlign: TextAlign.center,
+          style: AppTextStyles.headingM.copyWith(
+            fontWeight: FontWeight.w700,
           ),
-          Expanded(
-            child: Text(
-              'Kıble Bulucu',
-              textAlign: TextAlign.center,
-              style: AppTextStyles.headingM.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          _HeaderIconButton(
-            icon: Icons.info_outline_rounded,
-            onPressed: () => _showInfoDialog(context),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showInfoDialog(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: const Text('Kıble hakkında'),
-        content: const Text(
-          'Namaz kılarken yöneldiğimiz kıble, Mekke’deki Kâbe’yi gösterir. '
-          'Cihazınızın pusulası ve konum servisleri yardımıyla bu yön hesaplanır.',
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Tamam'),
-          ),
-        ],
       ),
     );
   }
 }
 
-class _HeaderIconButton extends StatelessWidget {
-  const _HeaderIconButton({
-    required this.icon,
-    required this.onPressed,
-  });
-
-  final IconData icon;
-  final VoidCallback onPressed;
+class _QiblaInfoText extends StatelessWidget {
+  const _QiblaInfoText();
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 44,
-      height: 44,
-      child: TextButton(
-        style: TextButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md),
-          ),
-          foregroundColor: AppColors.textPrimary,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+      child: Text(
+        'Namaz kılarken yöneldiğimiz kıble, Mekke\'deki Kâbe\'yi gösterir. '
+        'Cihazınızın pusulası ve konum servisleri yardımıyla bu yön hesaplanır.',
+        style: AppTextStyles.bodyM.copyWith(
+          color: AppColors.textSecondary,
         ),
-        onPressed: onPressed,
-        child: Icon(icon),
+        textAlign: TextAlign.justify,
       ),
     );
   }
@@ -208,6 +167,8 @@ class _QiblaSuccessView extends StatelessWidget {
                   directionLabel: state.qiblaDirectionLabel,
                   distanceKm: state.distanceToKaabaKm,
                 ),
+                const SizedBox(height: AppSpacing.lg),
+                const _QiblaInfoText(),
                 if (state.usedFallbackPosition) ...[
                   const SizedBox(height: AppSpacing.lg),
                   const _FallbackNotice(),

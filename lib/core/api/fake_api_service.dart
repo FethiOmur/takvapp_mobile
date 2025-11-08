@@ -3,6 +3,7 @@ import 'package:takvapp_mobile/core/models/device_request_model.dart';
 import 'package:takvapp_mobile/core/models/device_state_response_model.dart';
 import 'package:takvapp_mobile/core/models/prayer_times_model.dart';
 import 'package:takvapp_mobile/core/models/prayer_times_request_model.dart';
+import 'package:takvapp_mobile/core/models/monthly_prayer_times_model.dart';
 import 'api_service_interface.dart';
 
 // Bu sınıf, ApiService'in sahte versiyonudur.
@@ -56,5 +57,50 @@ class FakeApiService implements ApiServiceInterface {
     
     // Doğrudan sahte namaz vakitlerini dön
     return _fakePrayerTimes;
+  }
+
+  // Sahte `getMonthlyPrayerTimes` yanıtı
+  Future<MonthlyPrayerTimes> getMonthlyPrayerTimes({
+    required String location,
+    required int year,
+    required int month,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    final daysInMonth = DateTime(year, month + 1, 0).day;
+    final weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+
+    final dailyTimes = List.generate(daysInMonth, (index) {
+      final day = index + 1;
+      final date = DateTime(year, month, day);
+      final weekdayIndex = date.weekday - 1;
+      final weekday = weekdays[weekdayIndex];
+
+      final baseHour = 4;
+      final baseMinute = 49;
+      final variation = (day % 7) * 2;
+      final fajrHour = baseHour + (variation ~/ 60);
+      final fajrMinute = (baseMinute + variation) % 60;
+
+      return DailyPrayerTime(
+        day: day,
+        weekday: weekday,
+        times: PrayerTimes(
+          fajr: '${fajrHour.toString().padLeft(2, '0')}:${fajrMinute.toString().padLeft(2, '0')}',
+          sunrise: '05:57',
+          dhuhr: '11:59',
+          asr: '15:14',
+          maghrib: '17:58',
+          isha: '19:10',
+        ),
+      );
+    });
+
+    return MonthlyPrayerTimes(
+      location: location,
+      year: year,
+      month: month,
+      dailyTimes: dailyTimes,
+    );
   }
 }

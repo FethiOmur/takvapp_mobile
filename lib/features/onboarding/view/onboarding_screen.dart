@@ -1,4 +1,6 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:takvapp_mobile/core/theme/app_colors.dart';
 import 'package:takvapp_mobile/core/theme/app_spacing.dart';
 import 'package:takvapp_mobile/core/theme/app_text_styles.dart';
@@ -36,52 +38,84 @@ class OnboardingScreen extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withValues(alpha: 0.1),
-                  Colors.black.withValues(alpha: 0.65),
-                  Colors.black.withValues(alpha: 0.85),
+                  Colors.black.withValues(alpha: 0.15),
+                  Colors.black.withValues(alpha: 0.975),
+                  Colors.black.withValues(alpha: 1.0),
                 ],
               ),
             ),
           ),
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.xl,
-                vertical: AppSpacing.lg,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: TextButton(
-                      onPressed: () => _skip(context),
-                      child: const Text('Skip'),
-                    ),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: AppSpacing.xl,
+                    right: AppSpacing.xl,
+                    top: AppSpacing.lg,
+                    bottom: MediaQuery.of(context).size.height * 0.10,
                   ),
-                  const Spacer(),
-                  Center(
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/takvapplogo.png',
-                          height: 110,
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        Text(
-                          'TAKVAPP',
-                          style: AppTextStyles.displayXL.copyWith(
-                            letterSpacing: 8,
-                            color: AppColors.white,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: AppColors.background.withValues(alpha: 0.15),
+                                border: Border.all(
+                                  color: AppColors.white.withValues(alpha: 0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: TextButton(
+                                onPressed: () => _skip(context),
+                                child: Text(
+                                  'Skip',
+                                  style: AppTextStyles.bodyM.copyWith(
+                                    color: AppColors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      const Spacer(),
+                      Center(
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              'assets/images/takvapplogo.png',
+                              height: 110,
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            Text(
+                              'TAKVAPP',
+                              style: AppTextStyles.displayXL.copyWith(
+                                fontFamily: 'monospace',
+                                letterSpacing: 8,
+                                color: AppColors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
+                      _AuthButtons(onEmail: () => _openEmailVerification(context)),
+                    ],
                   ),
-                  const SizedBox(height: AppSpacing.xl),
-                  _AuthButtons(onEmail: () => _openEmailVerification(context)),
-                  const SizedBox(height: AppSpacing.lg),
-                  Row(
+                ),
+                Positioned(
+                  bottom: AppSpacing.lg,
+                  left: 0,
+                  right: 0,
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextButton(
@@ -103,8 +137,8 @@ class OnboardingScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -123,7 +157,7 @@ class _AuthButtons extends StatelessWidget {
     return Column(
       children: [
         _SocialButton(
-          icon: Icons.apple,
+          icon: _AppleIcon(),
           label: 'Continue with Apple',
           onTap: onEmail,
           backgroundColor: Colors.white.withValues(alpha: 0.9),
@@ -131,7 +165,7 @@ class _AuthButtons extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         _SocialButton(
-          icon: Icons.g_translate,
+          icon: _GoogleIcon(),
           label: 'Continue with Google',
           onTap: onEmail,
           backgroundColor: Colors.white.withValues(alpha: 0.9),
@@ -141,7 +175,7 @@ class _AuthButtons extends StatelessWidget {
         _SocialButton(
           label: 'Continue with Email',
           onTap: onEmail,
-          backgroundColor: Colors.black.withValues(alpha: 0.6),
+          backgroundColor: AppColors.white.withValues(alpha: 0.15),
           foregroundColor: AppColors.white,
         ),
       ],
@@ -150,7 +184,7 @@ class _AuthButtons extends StatelessWidget {
 }
 
 class _SocialButton extends StatelessWidget {
-  final IconData? icon;
+  final Widget? icon;
   final String label;
   final VoidCallback onTap;
   final Color backgroundColor;
@@ -183,13 +217,37 @@ class _SocialButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
-              Icon(icon, color: foregroundColor),
+              SizedBox(width: 24, height: 24, child: icon),
               const SizedBox(width: AppSpacing.sm),
             ],
             Text(label, style: AppTextStyles.bodyM.copyWith(color: foregroundColor)),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _AppleIcon extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset(
+      'assets/images/apple.svg',
+      width: 24,
+      height: 24,
+      fit: BoxFit.contain,
+    );
+  }
+}
+
+class _GoogleIcon extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset(
+      'assets/images/google.svg',
+      width: 24,
+      height: 24,
+      fit: BoxFit.contain,
     );
   }
 }

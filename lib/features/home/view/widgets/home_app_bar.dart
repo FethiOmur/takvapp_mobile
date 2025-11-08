@@ -15,11 +15,6 @@ class HomeAppBar extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.menu_rounded, color: AppColors.white),
-        ),
-        const SizedBox(width: AppSpacing.sm),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
