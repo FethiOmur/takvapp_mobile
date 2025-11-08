@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: false,
+      extendBody: true,
       body: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -112,21 +112,31 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ),
         child: SafeArea(
-          child: IndexedStack(
-            index: _selectedIndex,
+          bottom: false,
+          child: Stack(
             children: [
-              _HomeOverview(stories: _stories),
-              _qiblaTab,
-              const PrayerTimesPage(),
-              const QuranPage(),
-              const ExplorePage(),
+              IndexedStack(
+                index: _selectedIndex,
+                children: [
+                  _HomeOverview(stories: _stories),
+                  _qiblaTab,
+                  const PrayerTimesPage(),
+                  const QuranPage(),
+                  const ExplorePage(),
+                ],
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: MediaQuery.of(context).padding.bottom,
+                child: HomeBottomNavigationBar(
+                  selectedIndex: _selectedIndex,
+                  onItemTapped: _onItemTapped,
+                ),
+              ),
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: HomeBottomNavigationBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
       ),
     );
   }
@@ -141,7 +151,11 @@ class _HomeOverview extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+      padding: EdgeInsets.only(
+        left: AppSpacing.xl,
+        right: AppSpacing.xl,
+        bottom: MediaQuery.of(context).padding.bottom + 100,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

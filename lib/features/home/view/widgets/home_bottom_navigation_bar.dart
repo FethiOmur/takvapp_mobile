@@ -107,39 +107,36 @@ class _LiquidGlassNavBarState extends State<_LiquidGlassNavBar> {
         ? AppColors.background.withValues(alpha: 0.15)
         : AppColors.white.withValues(alpha: 0.2);
 
-    return SizedBox(
-      height: 86 + AppSpacing.lg + MediaQuery.of(context).padding.bottom,
-      child: Padding(
-        padding: const EdgeInsets.only(
-          left: AppSpacing.xl,
-          right: AppSpacing.xl,
-          bottom: AppSpacing.lg,
-        ),
-        child: GestureDetector(
-          onTapDown: _handleTapDown,
-          behavior: HitTestBehavior.translucent,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(44),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(44),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          overlayColor,
-                          overlayColor.withValues(alpha: isDark ? 0.12 : 0.16),
-                        ],
-                      ),
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: AppSpacing.xl,
+        right: AppSpacing.xl,
+      ),
+      child: GestureDetector(
+        onTapDown: _handleTapDown,
+        behavior: HitTestBehavior.translucent,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(44),
+          child: Stack(
+            clipBehavior: Clip.hardEdge,
+            children: [
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(44),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        overlayColor,
+                        overlayColor.withValues(alpha: isDark ? 0.12 : 0.16),
+                      ],
                     ),
-                    child: SizedBox(
-                      height: 86,
-                      child: Row(
+                  ),
+                  child: SizedBox(
+                    height: 86,
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: List.generate(widget.items.length, (index) {
                         final item = widget.items[index];
@@ -158,41 +155,19 @@ class _LiquidGlassNavBarState extends State<_LiquidGlassNavBar> {
                   ),
                 ),
               ),
-              Positioned(
-                left: 0,
-                right: 0,
-                top: -20,
-                height: 20,
-                child: IgnorePointer(
-                  ignoring: true,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(44),
-                        topRight: Radius.circular(44),
-                      ),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          overlayColor,
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               Positioned.fill(
                 child: IgnorePointer(
                   ignoring: true,
-                  child: FluidGlassEffect(
-                    key: _fluidGlassKey,
-                    scale: 0.25,
-                    blurRadius: 30.0,
-                    animationDuration: const Duration(milliseconds: 300),
-                    visibleDuration: const Duration(milliseconds: 500),
-                    child: const SizedBox.expand(),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(44),
+                    child: FluidGlassEffect(
+                      key: _fluidGlassKey,
+                      scale: 0.25,
+                      blurRadius: 30.0,
+                      animationDuration: const Duration(milliseconds: 300),
+                      visibleDuration: const Duration(milliseconds: 500),
+                      child: const SizedBox.expand(),
+                    ),
                   ),
                 ),
               ),
@@ -200,7 +175,6 @@ class _LiquidGlassNavBarState extends State<_LiquidGlassNavBar> {
           ),
         ),
       ),
-    ),
     );
   }
 }
@@ -301,41 +275,38 @@ class _ClassicNavBarState extends State<_ClassicNavBar> {
         ? AppColors.background.withValues(alpha: 0.15)
         : AppColors.white.withValues(alpha: 0.2);
 
-    return SizedBox(
-      height: 80 + AppSpacing.lg + MediaQuery.of(context).padding.bottom,
-      child: Padding(
-        padding: const EdgeInsets.only(
-          left: AppSpacing.xl,
-          right: AppSpacing.xl,
-          bottom: AppSpacing.lg,
-        ),
-        child: GestureDetector(
-          onTapDown: _handleTapDown,
-          behavior: HitTestBehavior.translucent,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(36),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(36),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          overlayColor,
-                          overlayColor.withValues(alpha: isDark ? 0.12 : 0.16),
-                        ],
-                      ),
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: AppSpacing.xl,
+        right: AppSpacing.xl,
+      ),
+      child: GestureDetector(
+        onTapDown: _handleTapDown,
+        behavior: HitTestBehavior.translucent,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(36),
+          child: Stack(
+            clipBehavior: Clip.hardEdge,
+            children: [
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(36),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        overlayColor,
+                        overlayColor.withValues(alpha: isDark ? 0.12 : 0.16),
+                      ],
                     ),
-                    child: SizedBox(
-                      height: 80,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: List.generate(widget.items.length, (index) {
+                  ),
+                  child: SizedBox(
+                    height: 80,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: List.generate(widget.items.length, (index) {
                         final item = widget.items[index];
                         final selected = index == widget.selectedIndex;
                         return Expanded(
@@ -352,41 +323,19 @@ class _ClassicNavBarState extends State<_ClassicNavBar> {
                   ),
                 ),
               ),
-              Positioned(
-                left: 0,
-                right: 0,
-                top: -20,
-                height: 20,
-                child: IgnorePointer(
-                  ignoring: true,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(36),
-                        topRight: Radius.circular(36),
-                      ),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          overlayColor,
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               Positioned.fill(
                 child: IgnorePointer(
                   ignoring: true,
-                  child: FluidGlassEffect(
-                    key: _fluidGlassKey,
-                    scale: 0.25,
-                    blurRadius: 30.0,
-                    animationDuration: const Duration(milliseconds: 300),
-                    visibleDuration: const Duration(milliseconds: 500),
-                    child: const SizedBox.expand(),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(36),
+                    child: FluidGlassEffect(
+                      key: _fluidGlassKey,
+                      scale: 0.25,
+                      blurRadius: 30.0,
+                      animationDuration: const Duration(milliseconds: 300),
+                      visibleDuration: const Duration(milliseconds: 500),
+                      child: const SizedBox.expand(),
+                    ),
                   ),
                 ),
               ),
@@ -394,7 +343,6 @@ class _ClassicNavBarState extends State<_ClassicNavBar> {
           ),
         ),
       ),
-    ),
     );
   }
 }
