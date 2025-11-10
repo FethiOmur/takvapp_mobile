@@ -20,6 +20,8 @@ class _QiblaCompassState extends State<QiblaCompass> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return StreamBuilder<CompassEvent>(
       stream: FlutterCompass.events,
       builder: (context, snapshot) {
@@ -28,6 +30,12 @@ class _QiblaCompassState extends State<QiblaCompass> {
 
         final double rotationDeg = (widget.bearing - heading) % 360;
         final double rotationRad = rotationDeg * math.pi / 180;
+        
+        // Kabe tam karşıya geldiğinde (±2 derece tolerans)
+        final double adjustment = rotationDeg > 180 ? 360 - rotationDeg : rotationDeg;
+        final bool isAligned = adjustment <= 2.0;
+        final Color kaabaColor = isAligned ? const Color(0xFFFFD27D) : (isDark ? AppColors.white : AppColors.lightTextPrimary);
+        final Color arrowColor = isAligned ? const Color(0xFFFFD27D) : (isDark ? AppColors.white : AppColors.lightTextPrimary);
 
         return SizedBox(
           width: 300,
@@ -40,21 +48,28 @@ class _QiblaCompassState extends State<QiblaCompass> {
                 height: 300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: const RadialGradient(
-                    colors: [
-                      Color(0xFF243344),
-                      Color(0xFF172130),
-                    ],
+                  gradient: RadialGradient(
+                    colors: isDark
+                        ? [
+                            const Color(0xFF243344),
+                            const Color(0xFF172130),
+                          ]
+                        : [
+                            AppColors.lightSurfaceHigh,
+                            AppColors.lightSurface,
+                          ],
                   ),
                   border: Border.all(
-                    color: AppColors.surfaceHigh.withValues(alpha: 0.6),
+                    color: isDark
+                        ? AppColors.surfaceHigh.withValues(alpha: 0.6)
+                        : AppColors.lightTextMuted.withValues(alpha: 0.3),
                     width: 2,
                   ),
-                  boxShadow: const [
+                  boxShadow: [
                     BoxShadow(
-                      color: Colors.black45,
+                      color: isDark ? Colors.black45 : Colors.black12,
                       blurRadius: 28,
-                      offset: Offset(0, 16),
+                      offset: const Offset(0, 16),
                     ),
                   ],
                 ),
@@ -63,18 +78,22 @@ class _QiblaCompassState extends State<QiblaCompass> {
                 width: 300,
                 height: 300,
                 child: CustomPaint(
-                  painter: _CompassTickPainter(),
+                  painter: _CompassTickPainter(isDark: isDark),
                 ),
               ),
-              ..._cardinalLabels(context),
+              ..._cardinalLabels(context, isDark),
               Container(
                 width: 240,
                 height: 240,
                 decoration: BoxDecoration(
-                  color: AppColors.background.withValues(alpha: 0.55),
+                  color: isDark
+                      ? AppColors.background.withValues(alpha: 0.55)
+                      : AppColors.lightSurfaceLow.withValues(alpha: 0.7),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppColors.surfaceHigh.withValues(alpha: 0.4),
+                    color: isDark
+                        ? AppColors.surfaceHigh.withValues(alpha: 0.4)
+                        : AppColors.lightTextMuted.withValues(alpha: 0.2),
                     width: 1.5,
                   ),
                 ),
@@ -88,15 +107,15 @@ class _QiblaCompassState extends State<QiblaCompass> {
                     Icon(
                       Icons.navigation_rounded,
                       size: 110,
-                      color: AppColors.white,
+                      color: arrowColor,
                     ),
                     const SizedBox(height: 8),
                     SvgPicture.asset(
                       'assets/images/qibla_icon.svg',
                       width: 56,
                       height: 47,
-                      colorFilter: const ColorFilter.mode(
-                        AppColors.white,
+                      colorFilter: ColorFilter.mode(
+                        kaabaColor,
                         BlendMode.srcIn,
                       ),
                     ),
@@ -112,12 +131,16 @@ class _QiblaCompassState extends State<QiblaCompass> {
                       vertical: AppSpacing.sm,
                     ),
                     decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.45),
+                      color: isDark
+                          ? Colors.black.withValues(alpha: 0.45)
+                          : AppColors.lightTextPrimary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(AppRadius.lg),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Cihazınızı düz tutun ve pusula sensörünü etkinleştirin.',
-                      style: TextStyle(color: AppColors.white),
+                      style: TextStyle(
+                        color: isDark ? AppColors.white : AppColors.lightTextPrimary,
+                      ),
                     ),
                   ),
                 ),
@@ -135,10 +158,11 @@ class _QiblaCompassState extends State<QiblaCompass> {
   }
 }
 
-List<Widget> _cardinalLabels(BuildContext context) {
+List<Widget> _cardinalLabels(BuildContext context, bool isDark) {
   final TextStyle baseStyle = Theme.of(context).textTheme.titleMedium!.copyWith(
         fontWeight: FontWeight.bold,
       );
+  final labelColor = isDark ? Colors.white70 : AppColors.lightTextMuted;
 
   return [
     // North - top center
@@ -147,7 +171,12 @@ List<Widget> _cardinalLabels(BuildContext context) {
       left: 0,
       right: 0,
       child: Center(
-        child: Text('N', style: baseStyle.copyWith(color: Colors.redAccent)),
+        child: Text(
+          'N',
+          style: baseStyle.copyWith(
+            color: isDark ? Colors.redAccent : AppColors.error,
+          ),
+        ),
       ),
     ),
     // South - bottom center
@@ -156,7 +185,7 @@ List<Widget> _cardinalLabels(BuildContext context) {
       left: 0,
       right: 0,
       child: Center(
-        child: Text('S', style: baseStyle.copyWith(color: Colors.white70)),
+        child: Text('S', style: baseStyle.copyWith(color: labelColor)),
       ),
     ),
     // West - left center
@@ -165,7 +194,7 @@ List<Widget> _cardinalLabels(BuildContext context) {
       top: 0,
       bottom: 0,
       child: Center(
-        child: Text('W', style: baseStyle.copyWith(color: Colors.white70)),
+        child: Text('W', style: baseStyle.copyWith(color: labelColor)),
       ),
     ),
     // East - right center
@@ -174,25 +203,31 @@ List<Widget> _cardinalLabels(BuildContext context) {
       top: 0,
       bottom: 0,
       child: Center(
-        child: Text('E', style: baseStyle.copyWith(color: Colors.white70)),
+        child: Text('E', style: baseStyle.copyWith(color: labelColor)),
       ),
     ),
   ];
 }
 
 class _CompassTickPainter extends CustomPainter {
+  final bool isDark;
+
+  _CompassTickPainter({this.isDark = true});
+
   @override
   void paint(Canvas canvas, Size size) {
     final double radius = size.width / 2;
     final Offset center = Offset(radius, radius);
 
+    final tickColor = isDark ? Colors.white : AppColors.lightTextPrimary;
+
     final Paint majorTickPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.24)
+      ..color = tickColor.withValues(alpha: 0.24)
       ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
 
     final Paint minorTickPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.12)
+      ..color = tickColor.withValues(alpha: 0.12)
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round;
 

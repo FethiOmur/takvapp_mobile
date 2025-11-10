@@ -39,6 +39,13 @@ class _AskImamCardState extends State<AskImamCard> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     final borderRadius = BorderRadius.circular(36);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBgColor1 = isDark 
+        ? AppColors.surfaceHigh.withValues(alpha: 0.6)
+        : AppColors.lightSurface.withValues(alpha: 0.9);
+    final cardBgColor2 = isDark 
+        ? AppColors.surface.withValues(alpha: 0.5)
+        : AppColors.lightSurfaceHigh.withValues(alpha: 0.95);
 
     return Container(
       width: double.infinity,
@@ -59,70 +66,80 @@ class _AskImamCardState extends State<AskImamCard> with SingleTickerProviderStat
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        AppColors.surfaceHigh.withValues(alpha: 0.6),
-                        AppColors.surface.withValues(alpha: 0.5),
+                        cardBgColor1,
+                        cardBgColor2,
                       ],
                     ),
                   ),
                 ),
               ),
             ),
-            Positioned.fill(
-              child: ClipRRect(
-                borderRadius: borderRadius,
-                child: SvgPicture.asset(
-                  'assets/images/background.png',
-                  fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.white.withValues(alpha: 0.07),
-                    BlendMode.srcATop,
-                  ),
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: ClipRRect(
-                borderRadius: borderRadius,
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                  child: Container(color: AppColors.white.withValues(alpha: 0.01)),
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: ClipRRect(
-                borderRadius: borderRadius,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.white.withValues(alpha: 0.04),
-                        AppColors.transparent,
-                      ],
-                      stops: const [0, 0.55],
+            if (isDark) ...[
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: borderRadius,
+                  child: SvgPicture.asset(
+                    'assets/images/background.png',
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      AppColors.white.withValues(alpha: 0.07),
+                      BlendMode.srcATop,
                     ),
                   ),
                 ),
               ),
-            ),
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: borderRadius,
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                    child: Container(color: AppColors.white.withValues(alpha: 0.01)),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: borderRadius,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.white.withValues(alpha: 0.04),
+                          AppColors.transparent,
+                        ],
+                        stops: const [0, 0.55],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
             Positioned.fill(
               child: ClipRRect(
                 borderRadius: borderRadius,
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: borderRadius,
-                    border: Border.all(color: AppColors.white.withValues(alpha: 0.04)),
+                    border: Border.all(
+                      color: isDark
+                          ? AppColors.white.withValues(alpha: 0.04)
+                          : AppColors.lightTextMuted.withValues(alpha: 0.2),
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.25),
+                        color: isDark
+                            ? AppColors.primary.withValues(alpha: 0.25)
+                            : AppColors.white.withValues(alpha: 0.15),
                         blurRadius: 32,
                         spreadRadius: -2,
                         offset: const Offset(0, 0),
                       ),
                       BoxShadow(
-                        color: AppColors.secondary.withValues(alpha: 0.15),
+                        color: isDark
+                            ? AppColors.secondary.withValues(alpha: 0.15)
+                            : AppColors.white.withValues(alpha: 0.1),
                         blurRadius: 40,
                         spreadRadius: 4,
                         offset: const Offset(0, 0),
@@ -132,30 +149,31 @@ class _AskImamCardState extends State<AskImamCard> with SingleTickerProviderStat
                 ),
               ),
             ),
-            AnimatedBuilder(
-              animation: _shimmerAnimation,
-              builder: (context, child) {
-                return Positioned.fill(
-                  child: ClipRRect(
-                    borderRadius: borderRadius,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment(_shimmerAnimation.value - 1, -1),
-                          end: Alignment(_shimmerAnimation.value + 1, 1),
-                          colors: [
-                            Colors.transparent,
-                            AppColors.white.withValues(alpha: 0.05),
-                            Colors.transparent,
-                          ],
-                          stops: const [0.0, 0.5, 1.0],
+            if (isDark)
+              AnimatedBuilder(
+                animation: _shimmerAnimation,
+                builder: (context, child) {
+                  return Positioned.fill(
+                    child: ClipRRect(
+                      borderRadius: borderRadius,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment(_shimmerAnimation.value - 1, -1),
+                            end: Alignment(_shimmerAnimation.value + 1, 1),
+                            colors: [
+                              Colors.transparent,
+                              AppColors.white.withValues(alpha: 0.05),
+                              Colors.transparent,
+                            ],
+                            stops: const [0.0, 0.5, 1.0],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
             Padding(
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: Row(
@@ -163,10 +181,14 @@ class _AskImamCardState extends State<AskImamCard> with SingleTickerProviderStat
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceHigh.withValues(alpha: 0.4),
+                      color: isDark
+                          ? AppColors.surfaceHigh.withValues(alpha: 0.4)
+                          : AppColors.lightSurfaceHigh.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(AppRadius.lg),
                       border: Border.all(
-                        color: AppColors.white.withValues(alpha: 0.1),
+                        color: isDark
+                            ? AppColors.white.withValues(alpha: 0.1)
+                            : AppColors.lightTextMuted.withValues(alpha: 0.2),
                         width: 1,
                       ),
                     ),
@@ -178,7 +200,7 @@ class _AskImamCardState extends State<AskImamCard> with SingleTickerProviderStat
                           child: Icon(
                             Icons.auto_awesome_rounded,
                             size: 28,
-                            color: AppColors.white,
+                            color: isDark ? AppColors.white : AppColors.lightTextPrimary,
                           ),
                         );
                       },
@@ -189,11 +211,18 @@ class _AskImamCardState extends State<AskImamCard> with SingleTickerProviderStat
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Ask Imam AI', style: AppTextStyles.headingM),
+                        Text(
+                          'İmam AI\'ya Sor',
+                          style: AppTextStyles.headingM.copyWith(
+                            color: isDark ? AppColors.white : AppColors.lightTextPrimary,
+                          ),
+                        ),
                         const SizedBox(height: AppSpacing.xs),
                         Text(
-                          'Get instant answers to fiqh questions and daily dilemmas with trusted sources.',
-                          style: AppTextStyles.bodyS,
+                          'Güvenilir kaynaklarla fıkıh sorularına ve günlük ikilemlere anında cevaplar alın.',
+                          style: AppTextStyles.bodyS.copyWith(
+                            color: isDark ? AppColors.textSecondary : AppColors.lightTextSecondary,
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -201,17 +230,52 @@ class _AskImamCardState extends State<AskImamCard> with SingleTickerProviderStat
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.white,
-                      foregroundColor: AppColors.primaryVariant,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.lg,
-                        vertical: AppSpacing.sm,
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFF4D8DFF),
+                          Color(0xFF62F5FF),
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF62F5FF).withValues(alpha: 0.16),
+                          blurRadius: 24,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                      border: Border.all(color: AppColors.white.withValues(alpha: 0.18)),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {},
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.lg,
+                            vertical: AppSpacing.sm,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                'Aç',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    child: const Text('Open'),
                   ),
                 ],
               ),

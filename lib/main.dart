@@ -8,6 +8,7 @@ import 'package:takvapp_mobile/core/services/background_task_service.dart';
 import 'package:takvapp_mobile/core/services/device_service.dart';
 import 'package:takvapp_mobile/core/services/location_service.dart';
 import 'package:takvapp_mobile/core/services/prayer_cache_service.dart';
+import 'package:takvapp_mobile/core/services/theme_service.dart';
 import 'package:takvapp_mobile/core/theme/app_theme.dart';
 import 'package:takvapp_mobile/features/app_init/cubit/app_init_cubit.dart';
 import 'package:takvapp_mobile/features/onboarding/view/onboarding_screen.dart';
@@ -21,8 +22,31 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final ThemeService _themeService = ThemeService();
+
+  @override
+  void initState() {
+    super.initState();
+    _themeService.addListener(_onThemeChanged);
+  }
+
+  @override
+  void dispose() {
+    _themeService.removeListener(_onThemeChanged);
+    super.dispose();
+  }
+
+  void _onThemeChanged() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +61,7 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<BackgroundTaskService>(
           create: (context) => NoopBackgroundTaskService(),
         ),
+        RepositoryProvider<ThemeService>(create: (_) => _themeService),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -55,13 +80,19 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ],
-        child: MaterialApp(
-          title: 'Takva App',
-          theme: AppTheme.darkTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.dark,
-          debugShowCheckedModeBanner: false,
-          home: const OnboardingScreen(),
+        child: ListenableBuilder(
+          listenable: _themeService,
+          builder: (context, _) {
+            return MaterialApp(
+              title: 'Takva App',
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: _themeService.themeMode,
+              debugShowCheckedModeBanner: false,
+              showPerformanceOverlay: false,
+              home: const OnboardingScreen(),
+            );
+          },
         ),
       ),
     );

@@ -108,6 +108,22 @@ class _PrayerTimesCardNewState extends State<PrayerTimesCardNew> {
     return nextKey ?? PrayerKey.fajr;
   }
 
+  String _getBackgroundSvg(PrayerKey key) {
+    switch (key) {
+      case PrayerKey.fajr:
+        return 'assets/images/prayer_times/night.svg';
+      case PrayerKey.sunrise:
+        return 'assets/images/prayer_times/sunrise.svg';
+      case PrayerKey.dhuhr:
+      case PrayerKey.asr:
+        return 'assets/images/prayer_times/afternoon.svg';
+      case PrayerKey.maghrib:
+        return 'assets/images/prayer_times/evening.svg';
+      case PrayerKey.isha:
+        return 'assets/images/prayer_times/night.svg';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final times = _parseTimes();
@@ -147,21 +163,8 @@ class _PrayerTimesCardNewState extends State<PrayerTimesCardNew> {
                 child: ClipRRect(
                   borderRadius: borderRadius,
                   child: SvgPicture.asset(
-                    'assets/images/background.png',
+                    _getBackgroundSvg(_selected),
                     fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                      AppColors.white.withValues(alpha: 0.07),
-                      BlendMode.srcATop,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned.fill(
-                child: ClipRRect(
-                  borderRadius: borderRadius,
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                    child: Container(color: AppColors.white.withValues(alpha: 0.01)),
                   ),
                 ),
               ),
@@ -174,7 +177,7 @@ class _PrayerTimesCardNewState extends State<PrayerTimesCardNew> {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          AppColors.white.withValues(alpha: 0.04),
+                          AppColors.white.withValues(alpha: 0.02),
                           AppColors.transparent,
                         ],
                         stops: const [0, 0.55],

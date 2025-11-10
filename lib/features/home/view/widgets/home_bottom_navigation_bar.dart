@@ -196,15 +196,21 @@ class _LiquidNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isDark 
+        ? (selected ? AppColors.white : AppColors.white.withValues(alpha: 0.75))
+        : (selected ? AppColors.lightTextPrimary : AppColors.lightTextMuted);
+    final textColor = isDark
+        ? (selected ? AppColors.white : AppColors.white.withValues(alpha: 0.65))
+        : (selected ? AppColors.lightTextPrimary : AppColors.lightTextMuted);
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: AnimatedDefaultTextStyle(
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOut,
-        style: (selected
-                ? AppTextStyles.bodyS.copyWith(color: AppColors.white)
-                : AppTextStyles.bodyS.copyWith(color: AppColors.white.withValues(alpha: 0.65)))
+        style: AppTextStyles.bodyS.copyWith(color: textColor)
             .copyWith(fontWeight: selected ? FontWeight.w600 : FontWeight.w400),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -217,15 +223,15 @@ class _LiquidNavItem extends StatelessWidget {
                   ? SvgPicture.asset(
                       svgPath!,
                       width: selected ? 26 : 24,
-                      height: selected ?26 : 24,
+                      height: selected ? 26 : 24,
                       colorFilter: ColorFilter.mode(
-                        selected ? AppColors.white : AppColors.white.withValues(alpha: 0.75),
+                        iconColor,
                         BlendMode.srcIn,
                       ),
                     )
                   : Icon(
                       icon!,
-                      color: selected ? AppColors.white : AppColors.white.withValues(alpha: 0.75),
+                      color: iconColor,
                       size: selected ? 26 : 24,
                     ),
             ),
@@ -364,15 +370,21 @@ class _ClassicNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isDark 
+        ? (selected ? AppColors.white : AppColors.white.withValues(alpha: 0.75))
+        : (selected ? AppColors.lightTextPrimary : AppColors.lightTextMuted);
+    final textColor = isDark
+        ? (selected ? AppColors.white : AppColors.white.withValues(alpha: 0.65))
+        : (selected ? AppColors.lightTextPrimary : AppColors.lightTextMuted);
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: AnimatedDefaultTextStyle(
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOut,
-        style: (selected
-                ? AppTextStyles.bodyS.copyWith(color: AppColors.white)
-                : AppTextStyles.bodyS.copyWith(color: AppColors.white.withValues(alpha: 0.65)))
+        style: AppTextStyles.bodyS.copyWith(color: textColor)
             .copyWith(fontWeight: selected ? FontWeight.w600 : FontWeight.w400),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -387,13 +399,13 @@ class _ClassicNavItem extends StatelessWidget {
                       width: selected ? 26 : 24,
                       height: selected ? 26 : 24,
                       colorFilter: ColorFilter.mode(
-                        selected ? AppColors.white : AppColors.white.withValues(alpha: 0.75),
+                        iconColor,
                         BlendMode.srcIn,
                       ),
                     )
                   : Icon(
                       icon!,
-                      color: selected ? AppColors.white : AppColors.white.withValues(alpha: 0.75),
+                      color: iconColor,
                       size: selected ? 26 : 24,
                     ),
             ),
@@ -423,9 +435,9 @@ class _NavItem {
 }
 
 const List<_NavItem> _navItems = [
-  _NavItem(icon: Icons.home_filled, label: 'Home'),
-  _NavItem(svgPath: 'assets/images/qibla_icon.svg', label: 'Qibla'),
-  _NavItem(icon: Icons.access_time_filled_rounded, label: 'Prayer'),
-  _NavItem(icon: Icons.menu_book_rounded, label: 'Quran'),
-  _NavItem(icon: Icons.explore_rounded, label: 'Explore'),
+  _NavItem(icon: Icons.home_filled, label: 'Ana Sayfa'),
+  _NavItem(svgPath: 'assets/images/qibla_icon.svg', label: 'Kıble'),
+  _NavItem(svgPath: 'assets/images/prayertimes.svg', label: 'Namaz'),
+  _NavItem(icon: Icons.menu_book_rounded, label: 'Kuran'),
+  _NavItem(icon: Icons.explore_rounded, label: 'Keşfet'),
 ];

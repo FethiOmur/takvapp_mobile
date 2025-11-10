@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,8 +8,30 @@ import 'package:takvapp_mobile/core/theme/app_text_styles.dart';
 import 'package:takvapp_mobile/features/app_init/view/app_init_wrapper_page.dart';
 import 'package:takvapp_mobile/features/onboarding/view/email_verification_screen.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  late final String _randomSvgPath;
+
+  @override
+  void initState() {
+    super.initState();
+    final onboardingSvgs = [
+      'assets/images/onboarding/onboarding_1.svg',
+      'assets/images/onboarding/onboarding_2.svg',
+      'assets/images/onboarding/onboarding_3.svg',
+      'assets/images/onboarding/onboarding_4.svg',
+      'assets/images/onboarding/onboarding_5.svg',
+      'assets/images/onboarding/onboarding_6.svg',
+    ];
+    final random = Random();
+    _randomSvgPath = onboardingSvgs[random.nextInt(onboardingSvgs.length)];
+  }
 
   void _openEmailVerification(BuildContext context) {
     Navigator.of(context).push(
@@ -28,9 +51,24 @@ class OnboardingScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            'assets/images/openingscreencami.png',
-            fit: BoxFit.cover,
+          Positioned.fill(
+            child: SvgPicture.asset(
+              _randomSvgPath,
+              fit: BoxFit.cover,
+              placeholderBuilder: (context) => Container(
+                color: Colors.black,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              errorBuilder: (context, error, stackTrace) {
+                // Fallback to original image if SVG fails
+                return Image.asset(
+                  'assets/images/openingscreencami.png',
+                  fit: BoxFit.cover,
+                );
+              },
+            ),
           ),
           Container(
             decoration: BoxDecoration(
@@ -97,8 +135,10 @@ class OnboardingScreen extends StatelessWidget {
                             const SizedBox(height: AppSpacing.md),
                             Text(
                               'TAKVAPP',
-                              style: AppTextStyles.displayXL.copyWith(
-                                fontFamily: 'monospace',
+                              style: TextStyle(
+                                fontFamily: 'Major Mono Display',
+                                fontSize: AppTextStyles.displayXL.fontSize,
+                                fontWeight: AppTextStyles.displayXL.fontWeight,
                                 letterSpacing: 8,
                                 color: AppColors.white,
                               ),

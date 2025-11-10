@@ -40,6 +40,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/onboarding/
+    - assets/images/prayer_times/
   fonts:
     - family: Poppins
       fonts:
@@ -51,3 +53,7 @@ flutter:
           weight: 600
         - asset: assets/fonts/Poppins/Poppins-Bold.ttf
           weight: 700
+    - family: Major Mono Display
+      fonts:
+        - asset: assets/fonts/MajorMonoDisplay/MajorMonoDisplay-Regular.ttf
+          weight: 400

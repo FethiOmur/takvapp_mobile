@@ -178,7 +178,10 @@ class _QiblaSuccessView extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+          padding: EdgeInsets.only(
+            top: AppSpacing.lg,
+            bottom: MediaQuery.of(context).padding.bottom + AppSpacing.lg + 80,
+          ),
           child: Column(
             children: [
               Text(
@@ -191,7 +194,6 @@ class _QiblaSuccessView extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.sm),
       ],
     );
   }
@@ -227,10 +229,48 @@ class _FallbackNotice extends StatelessWidget {
   }
 }
 
-class _QiblaDirectionHint extends StatelessWidget {
+class _QiblaDirectionHint extends StatefulWidget {
   const _QiblaDirectionHint({required this.bearing});
 
   final double bearing;
+
+  @override
+  State<_QiblaDirectionHint> createState() => _QiblaDirectionHintState();
+}
+
+class _QiblaDirectionHintState extends State<_QiblaDirectionHint>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _fadeAnimation;
+  bool _wasAligned = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.elasticOut,
+      ),
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeIn,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -246,19 +286,76 @@ class _QiblaDirectionHint extends StatelessWidget {
           );
         }
 
-        final double delta = ((bearing - heading) + 360) % 360;
+        final double delta = ((widget.bearing - heading) + 360) % 360;
         final bool turnLeft = delta > 180;
         final double adjustment = turnLeft ? 360 - delta : delta;
         final String hint = turnLeft ? 'Sola' : 'Sağa';
+        
+        // Kabe tam karşıya geldiğinde (±2 derece tolerans)
+        final bool isAligned = adjustment <= 2.0;
+        
+        // İlk kez hizalandığında animasyonu başlat
+        if (isAligned && !_wasAligned) {
+          _wasAligned = true;
+          _controller.forward();
+        } else if (!isAligned && _wasAligned) {
+          _wasAligned = false;
+          _controller.reset();
+        }
 
-        return Column(
-          children: [
-            Text(
-              '$hint ${adjustment.toStringAsFixed(0)}° dön',
-              style: AppTextStyles.displayL.copyWith(fontSize: 24),
+        if (isAligned) {
+          return SizedBox(
+            height: 80 + (AppSpacing.lg * 2),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _fadeAnimation.value,
+                      child: Transform.scale(
+                        scale: _scaleAnimation.value,
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFFFFD27D).withValues(alpha: 0.2),
+                            border: Border.all(
+                              color: const Color(0xFFFFD27D),
+                              width: 3,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.check_circle_rounded,
+                            color: Color(0xFFFFD27D),
+                            size: 50,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: AppSpacing.sm),
-          ],
+          );
+        }
+
+        return SizedBox(
+          height: 80 + (AppSpacing.lg * 2),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '$hint dön',
+                style: AppTextStyles.displayL.copyWith(
+                  fontSize: 24,
+                  color: AppColors.white,
+                ),
+              ),
+            ],
+          ),
         );
       },
     );

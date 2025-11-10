@@ -144,16 +144,11 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF0A0F14),
-            Color(0xFF101A22),
-            Color(0xFF1C262E),
-            AppColors.surfaceLow,
-          ],
+          colors: AppColors.getBackgroundGradient(context),
         ),
       ),
       child: SafeArea(
@@ -175,7 +170,9 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                   Text(
                     _getTitleText(),
                     style: AppTextStyles.displayL.copyWith(
-                      color: AppColors.white,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.white
+                          : AppColors.lightTextPrimary,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -184,7 +181,9 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                     Text(
                       _locationName,
                       style: AppTextStyles.bodyM.copyWith(
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.textSecondary
+                            : AppColors.lightTextSecondary,
                       ),
                     ),
                   ],
@@ -200,7 +199,9 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                           child: Text(
                             'Veri bulunamadı',
                             style: AppTextStyles.bodyM.copyWith(
-                              color: AppColors.textSecondary,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.textSecondary
+                                  : AppColors.lightTextSecondary,
                             ),
                           ),
                         )
@@ -226,7 +227,11 @@ class _PrayerTimesTable extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+      padding: EdgeInsets.only(
+        left: AppSpacing.xl,
+        right: AppSpacing.xl,
+        bottom: MediaQuery.of(context).padding.bottom + 120,
+      ),
       child: Column(
         children: [
           // Table header
@@ -247,13 +252,16 @@ class _PrayerTimesTable extends StatelessWidget {
 class _TableHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.md,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surfaceHigh.withValues(alpha: 0.3),
+        color: isDark
+            ? AppColors.surfaceHigh.withValues(alpha: 0.3)
+            : AppColors.lightSurfaceHigh.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Row(
@@ -310,6 +318,10 @@ class _HeaderCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isDark ? AppColors.textSecondary : AppColors.lightTextPrimary;
+    final textColor = isDark ? AppColors.textSecondary : AppColors.lightTextPrimary;
+    
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -317,13 +329,13 @@ class _HeaderCell extends StatelessWidget {
         Icon(
           icon,
           size: 18,
-          color: AppColors.textSecondary,
+          color: iconColor,
         ),
         const SizedBox(height: 4),
         Text(
           label,
           style: AppTextStyles.bodyS.copyWith(
-            color: AppColors.textSecondary,
+            color: textColor,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -344,6 +356,7 @@ class _TableRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isToday = day.day == DateTime.now().day &&
         DateTime.now().month == DateTime.now().month;
 
@@ -354,12 +367,14 @@ class _TableRow extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: isToday
-            ? AppColors.primary.withValues(alpha: 0.1)
-            : AppColors.surfaceHigh.withValues(alpha: 0.2),
+            ? AppColors.primary.withValues(alpha: isDark ? 0.1 : 0.15)
+            : (isDark
+                ? AppColors.surfaceHigh.withValues(alpha: 0.2)
+                : AppColors.lightSurfaceHigh.withValues(alpha: 0.5)),
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: isToday
             ? Border.all(
-                color: AppColors.primary.withValues(alpha: 0.3),
+                color: AppColors.primary.withValues(alpha: isDark ? 0.3 : 0.4),
                 width: 1,
               )
             : null,
@@ -418,10 +433,15 @@ class _DataCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isBold
+        ? (isDark ? AppColors.white : AppColors.lightTextPrimary)
+        : (isDark ? AppColors.textSecondary : AppColors.lightTextSecondary);
+    
     return Text(
       text,
       style: AppTextStyles.bodyM.copyWith(
-        color: isBold ? AppColors.white : AppColors.textSecondary,
+        color: textColor,
         fontWeight: isBold ? FontWeight.w600 : FontWeight.w400,
       ),
       textAlign: TextAlign.start,

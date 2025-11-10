@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:takvapp_mobile/core/models/device_state_response_model.dart';
 import 'package:takvapp_mobile/core/services/location_service.dart';
 import 'package:takvapp_mobile/core/theme/app_colors.dart';
@@ -99,16 +100,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Scaffold(
       extendBody: true,
       body: DecoratedBox(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF0A0F14),
-              Color(0xFF101A22),
-              Color(0xFF1C262E),
-              AppColors.surfaceLow,
-            ],
+            colors: AppColors.getBackgroundGradient(context),
           ),
         ),
         child: SafeArea(
@@ -159,6 +155,29 @@ class _HomeOverview extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Instagram-style header
+          Builder(
+            builder: (context) {
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              return Padding(
+                padding: const EdgeInsets.only(
+                  top: AppSpacing.md,
+                  bottom: 0,
+                ),
+                child: Center(
+                  child: SvgPicture.asset(
+                    'assets/images/takvapp-logoo.svg',
+                    height: 36,
+                    colorFilter: ColorFilter.mode(
+                      isDark ? AppColors.white : AppColors.lightTextPrimary,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: AppSpacing.md),
           StoriesSection(stories: stories),
           const SizedBox(height: AppSpacing.lg),
           const PrayerTimesCard(),

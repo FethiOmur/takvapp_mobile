@@ -78,6 +78,8 @@ class _StoryBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
@@ -105,8 +107,8 @@ class _StoryBubble extends StatelessWidget {
                 child: Container(
                   width: 75,
                   height: 75,
-                  decoration: const BoxDecoration(
-                    color: AppColors.background,
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.background : AppColors.lightBackground,
                     shape: BoxShape.circle,
                   ),
                   clipBehavior: Clip.antiAlias,
@@ -116,7 +118,9 @@ class _StoryBubble extends StatelessWidget {
                           height: 75,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: AppColors.surfaceHigh,
+                            color: isDark
+                                ? AppColors.surfaceHigh
+                                : AppColors.lightSurfaceHigh.withValues(alpha: 0.8),
                           ),
                           child: Stack(
                             children: [
@@ -132,10 +136,14 @@ class _StoryBubble extends StatelessWidget {
                                   return Container(
                                     width: 75,
                                     height: 75,
-                                    color: AppColors.surfaceLow,
-                                    child: const Icon(
+                                    color: isDark
+                                        ? AppColors.surfaceLow
+                                        : AppColors.lightSurfaceLow,
+                                    child: Icon(
                                       Icons.person,
-                                      color: AppColors.textSecondary,
+                                      color: isDark
+                                          ? AppColors.textSecondary
+                                          : AppColors.lightTextSecondary,
                                       size: 40,
                                     ),
                                   );
@@ -148,7 +156,9 @@ class _StoryBubble extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: AppColors.white.withValues(alpha: 0.1),
+                                    color: isDark
+                                        ? AppColors.white.withValues(alpha: 0.1)
+                                        : AppColors.lightTextMuted.withValues(alpha: 0.2),
                                     width: 1,
                                   ),
                                 ),
@@ -168,8 +178,16 @@ class _StoryBubble extends StatelessWidget {
                             return Container(
                               width: 75,
                               height: 75,
-                              color: AppColors.surfaceLow,
-                              child: const Icon(Icons.image, color: AppColors.textSecondary, size: 32),
+                              color: isDark
+                                  ? AppColors.surfaceLow
+                                  : AppColors.lightSurfaceLow,
+                              child: Icon(
+                                Icons.image,
+                                color: isDark
+                                    ? AppColors.textSecondary
+                                    : AppColors.lightTextSecondary,
+                                size: 32,
+                              ),
                             );
                           },
                         ),
@@ -181,7 +199,14 @@ class _StoryBubble extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(story.label, style: AppTextStyles.bodyS),
+              Text(
+                story.label,
+                style: AppTextStyles.bodyS.copyWith(
+                  color: isDark
+                      ? AppColors.textPrimary
+                      : AppColors.lightTextPrimary,
+                ),
+              ),
               if (story.isLive) ...[
                 const SizedBox(width: AppSpacing.xs),
                 Container(
