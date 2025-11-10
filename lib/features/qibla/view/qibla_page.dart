@@ -83,8 +83,7 @@ class _QiblaInfoText extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: Text(
-        'Namaz kılarken yöneldiğimiz kıble, Mekke\'deki Kâbe\'yi gösterir. '
-        'Cihazınızın pusulası ve konum servisleri yardımıyla bu yön hesaplanır.',
+        'Kıble, Mekke\'deki Kâbe\'yi gösterir. Konum servisleriyle hesaplanır.',
         style: AppTextStyles.bodyM.copyWith(
           color: AppColors.textSecondary,
         ),

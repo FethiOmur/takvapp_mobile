@@ -61,14 +61,14 @@ class _HomeBottomNavigationBarState extends State<HomeBottomNavigationBar> {
       type: MaterialType.transparency,
       child: useLiquid
           ? _LiquidGlassNavBar(
-              selectedIndex: widget.selectedIndex,
-              onItemTapped: widget.onItemTapped,
-              items: items,
+        selectedIndex: widget.selectedIndex,
+        onItemTapped: widget.onItemTapped,
+        items: items,
             )
           : _ClassicNavBar(
-              selectedIndex: widget.selectedIndex,
-              onItemTapped: widget.onItemTapped,
-              items: items,
+      selectedIndex: widget.selectedIndex,
+      onItemTapped: widget.onItemTapped,
+      items: items,
             ),
     );
   }
@@ -160,13 +160,13 @@ class _LiquidGlassNavBarState extends State<_LiquidGlassNavBar> {
                   ignoring: true,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(44),
-                    child: FluidGlassEffect(
-                      key: _fluidGlassKey,
-                      scale: 0.25,
-                      blurRadius: 30.0,
-                      animationDuration: const Duration(milliseconds: 300),
-                      visibleDuration: const Duration(milliseconds: 500),
-                      child: const SizedBox.expand(),
+                  child: FluidGlassEffect(
+                    key: _fluidGlassKey,
+                    scale: 0.25,
+                    blurRadius: 30.0,
+                    animationDuration: const Duration(milliseconds: 300),
+                    visibleDuration: const Duration(milliseconds: 500),
+                    child: const SizedBox.expand(),
                     ),
                   ),
                 ),
@@ -322,7 +322,7 @@ class _ClassicNavBarState extends State<_ClassicNavBar> {
                             label: item.label,
                             selected: selected,
                             onTap: () => widget.onItemTapped(index),
-                          ),
+                  ),
                         );
                       }),
                     ),
@@ -334,13 +334,13 @@ class _ClassicNavBarState extends State<_ClassicNavBar> {
                   ignoring: true,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(36),
-                    child: FluidGlassEffect(
-                      key: _fluidGlassKey,
-                      scale: 0.25,
-                      blurRadius: 30.0,
-                      animationDuration: const Duration(milliseconds: 300),
-                      visibleDuration: const Duration(milliseconds: 500),
-                      child: const SizedBox.expand(),
+                  child: FluidGlassEffect(
+                    key: _fluidGlassKey,
+                    scale: 0.25,
+                    blurRadius: 30.0,
+                    animationDuration: const Duration(milliseconds: 300),
+                    visibleDuration: const Duration(milliseconds: 500),
+                    child: const SizedBox.expand(),
                     ),
                   ),
                 ),
